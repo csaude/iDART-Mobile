@@ -33,19 +33,22 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edtSearchParam"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="10"
-            android:autofillHints="@string/input_search_patient"
-            android:drawableEnd="@drawable/ic_patient_search"
-            android:drawableRight="@drawable/ic_patient_search"
-            android:hint="@string/input_search_patient"
-            android:inputType="text"
-            android:padding="8dp"
-            android:textColor="@color/text_color" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="199dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtSearchParam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_patient_search"
+                android:drawableRight="@drawable/ic_patient_search"
+                android:gravity="bottom"
+                android:hint="@string/input_search_patient"
+                android:textColor="@color/text_color" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/buttonSearch"

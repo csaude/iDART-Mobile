@@ -56,5 +56,4 @@
     <string name="adress_person">Endreço</string>
     <string name="date_tarv">Data Inicio TARV</string>
     <string name="farmacia">Farmácia</string>
-    <string name="reason_to_stop">reasontostop</string>
 </resources>

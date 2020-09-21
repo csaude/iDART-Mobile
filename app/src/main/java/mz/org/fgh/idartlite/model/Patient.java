@@ -11,7 +11,6 @@ import mz.org.fgh.idartlite.util.Utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -163,17 +162,6 @@ public class Patient extends BaseModel {
 			e.printStackTrace();
 		}
 		return age;
-	}
-
-	public String getDateStartTarv(){
-		SimpleDateFormat datetemp = new SimpleDateFormat("yyyy-MM-dd");
-		if(this.startARVDate == null){
-			String data = datetemp.format(Calendar.DATE);
-			return data;
-		}else {
-			String data = datetemp.format(this.startARVDate);
-			return data;
-		}
 	}
 
 	public String getFullName(){
