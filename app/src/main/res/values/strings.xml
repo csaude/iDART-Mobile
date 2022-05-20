@@ -445,6 +445,7 @@ Se a reacção adversa for grave, referir o paciente para a US. </string>
     <string name="dispensa_semestral" translatable="false">Dispensa Semestral (DS)</string>
     <string name="total_dispensas">Total Dispensas</string>
     <string name="absent_patients_report">Pacientes Faltosos no Periodo</string>
+    <string name="active_patients_report">Pacientes Activos  no Periodo</string>
     <string name="date_missed">Data que faltou ao Levantamento</string>
     <string name="remove_dispense">Remover Dispensa</string>
     <string name="days_missed">Numero de Dias que faltou</string>

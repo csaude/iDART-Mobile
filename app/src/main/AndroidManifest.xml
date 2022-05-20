@@ -41,6 +41,7 @@
         <activity android:name=".view.reports.AwatingPatientsGraphReportActivity" />
         <activity android:name=".view.reports.PatientsAwaitingReportActivity" />
         <activity android:name=".view.reports.AbsentPatientsReportActivity" />
+        <activity android:name=".view.reports.ActivePatientsReportActivity" />
         <activity
             android:name=".view.home.IDartHomeActivity"
             android:label="@string/title_activity_i_dart_home"

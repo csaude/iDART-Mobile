@@ -165,7 +165,7 @@
                         android:background="@android:color/transparent"
                         android:drawableTop="@drawable/ic_gestao_stock"
                         android:layout_gravity="center"
-                        android:visibility="@{viewModel.currentClinicSector.mustValidateStock || viewModel.currentClinic.isPrivateClinic ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{viewModel.currentClinicSector.mustValidateStock || viewModel.currentClinic.privateOrComunitClinic ? View.VISIBLE : View.GONE}"
                         android:onClick="@{()-> viewModel.callStck()}"
                         android:text="@string/gestao_stock"/>
                 </LinearLayout>

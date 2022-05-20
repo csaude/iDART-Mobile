@@ -335,6 +335,24 @@ public class DispenseService extends BaseService<Dispense> implements IDispenseS
     }
 
     @Override
+    public List<Dispense> getActivePatientsBetweenNextPickppDateStartDateAndEndDateWithLimit(Date startDate, Date endDate, long offset, long limit) throws SQLException {
+        List<Dispense> dispenses = getDataBaseHelper().getDispenseDao().getActivePatientsBetweenNextPickppDateStartDateAndEndDateWithLimit(getApplication(),startDate,endDate,offset,limit);
+        List<Dispense> reportDispenses = new ArrayList<>();
+        int orderNumber=1;
+        for (Dispense dispense:
+                dispenses) {
+            if(DateUtilities.getDaysBetween(dispense.getNextPickupDate(),endDate) >= 5){
+                dispense.setOrderNumber(orderNumber);
+                reportDispenses.add(dispense);
+                orderNumber++;
+            }
+        }
+
+
+        return reportDispenses;
+    }
+
+    @Override
     public List<Dispense> getAllDispensesToRemoveByDates(Date dateToRemove) throws SQLException {
         return getDataBaseHelper().getDispenseDao().getAllDispensesToRemoveByDates(dateToRemove);
     }

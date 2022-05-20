@@ -26,7 +26,6 @@ import mz.org.fgh.idartlite.listener.recyclerView.ClickListener;
 import mz.org.fgh.idartlite.model.ClinicInformation;
 import mz.org.fgh.idartlite.model.Report;
 import mz.org.fgh.idartlite.util.Utilities;
-import mz.org.fgh.idartlite.viewmodel.clinicInfo.PregnantPatientReportVM;
 import mz.org.fgh.idartlite.viewmodel.report.ReportTypeVM;
 
 public class ReportTypeActivity extends BaseActivity {
@@ -179,6 +178,7 @@ public class ReportTypeActivity extends BaseActivity {
         reports.add(Report.fastCreate("016", "Relatorio de Pacientes que rastrearam para gravidez", R.drawable.ic_list, PregnantPatientReportActivity.class,createParams(ClinicInformation.CLINIC_INFO_STATUS, ClinicInformation.PREGNANT_STATUS_ALL)));
         reports.add(Report.fastCreate("017", "Relatorio de Pacientes identificadas como Gravidas", R.drawable.ic_list, PregnantPatientReportActivity.class,createParams(ClinicInformation.CLINIC_INFO_STATUS, ClinicInformation.PREGNANT_STATUS_POSITIVE)));
         reports.add(Report.fastCreate("018", "Relatorio Estatistico de Dispensas por Tipo de Dispensa e Regime", R.drawable.ic_list, DispenseByDispenseTypeReportActivity.class));
+        reports.add(Report.fastCreate("019", "Relatorio de pacientes activos na farmacia", R.drawable.ic_list, ActivePatientsReportActivity.class));
 
         return reports;
     }

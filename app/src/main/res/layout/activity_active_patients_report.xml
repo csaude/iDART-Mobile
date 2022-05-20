@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="mz.org.fgh.idartlite.viewmodel.dispense.ActivePatientsReportVM" />
+        <import type="android.view.View"/>
+        <import type="mz.org.fgh.idartlite.util.Utilities"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".view.reports.ActivePatientsReportActivity" >
+
+        <include layout="@layout/app_bar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_layout"
+            android:padding="15dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                android:layout_marginBottom="@dimen/dimen_4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2.5"
+
+                    android:text="@string/data_inicio"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2.5"
+                    android:paddingRight="0dp"
+                    android:text="@string/data_fim"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingRight="@dimen/dimen_25dp"
+                    app:hintEnabled="false"
+                    android:hint="@string/data_inicio"
+                    app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                    app:errorTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtSearchParam"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:background="@color/white"
+                        android:text="@={viewModel.startDate}"
+                        android:inputType="text"/>
+
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingRight="@dimen/dimen_25dp"
+                    app:hintEnabled="false"
+                    android:hint="@string/search_patient"
+                    app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                    app:errorTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edtSearchParam2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:background="@color/white"
+                        android:text="@={viewModel.endDate}"
+                        android:inputType="text"/>
+
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <View
+                    android:layout_width="@dimen/dimen_0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.1"/>
+
+
+                <ImageView
+                    android:id="@+id/buttonSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6"
+                    android:background="@drawable/square_button_shape"
+                    android:layout_marginBottom="3dp"
+                    android:onClick="@{()->viewModel.initSearch()}"
+                    app:srcCompat="@drawable/ic_search"/>
+
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/initial_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/active_patients_report"
+            android:background="@drawable/shape_normal"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:paddingLeft="@dimen/dimen_10dp"
+            app:drawableEndCompat="@drawable/ic_expand_less"
+            android:layout_margin="@dimen/dimen_10dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/reyclerPatient"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="@dimen/dimen_10dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/generate_pdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:onClick="@{() -> viewModel.generatePDF()}"
+            android:visibility="@{Utilities.listHasElements(viewModel.allDisplyedRecords) ? View.VISIBLE : View.GONE}"
+            android:src="@drawable/ic_baseline_picture_as_pdf_24"
+            app:backgroundTint="@color/colorPrimary"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp" />
+    </LinearLayout>
+</layout>

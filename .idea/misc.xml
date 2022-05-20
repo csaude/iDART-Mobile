@@ -3,6 +3,24 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/drawable/ic_list.xml" value="0.242" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_absent_patients_report.xml" value="0.22" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_active_patients.xml" value="0.34148550724637683" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_active_patients_report.xml" value="0.33" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_dispense_by_dispense_type_report.xml" value="0.34148550724637683" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_fila_report.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_patients_awaiting_report.xml" value="0.23143115942028986" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_pregnant_patient_report.xml" value="0.34148550724637683" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_report.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_report_type.xml" value="0.23143115942028986" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/activity_reports_listing.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/app_bar.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/content_awaiting_absent_patients_report.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/content_awaiting_active_patients_report.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/content_clinic_info_report.xml" value="0.23143115942028986" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/content_patient.xml" value="0.23143115942028986" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/content_patients_awaiting_statistics.xml" value="0.23143115942028986" />
+        <entry key="..\:/Users/admin/Documents/FGH_Projects/FGH/iDART-Mobile/app/src/main/res/layout/fragment_home.xml" value="0.18854166666666666" />
         <entry key="..\:/Users/admin/Documents/FGH_Projects/iDART-Mobile/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/admin/Documents/FGH_Projects/iDART-Mobile/app/src/main/res/layout/activity_patient_home.xml" value="0.1" />
         <entry key="..\:/Users/admin/Documents/FGH_Projects/iDART-Mobile/app/src/main/res/layout/activity_second_splash.xml" value="0.25416666666666665" />

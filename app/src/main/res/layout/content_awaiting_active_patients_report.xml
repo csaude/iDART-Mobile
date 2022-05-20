@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="dispense"
+            type="mz.org.fgh.idartlite.model.Dispense" />
+        <import type="mz.org.fgh.idartlite.util.DateUtilities"/>
+        <import type="mz.org.fgh.idartlite.util.Utilities"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen_10dp">
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_pacient" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/nid_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/nid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/pacient_nid"
+                    android:layout_toLeftOf="@+id/pacient_nid"
+                    android:gravity="right"
+                    android:text="@string/nid"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginRight="@dimen/dimen_4dp"
+                    android:layout_marginBottom="@dimen/dimen_10dp"/>
+
+                <TextView
+                    android:id="@+id/pacient_nid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:text="@{dispense.prescription.patient.nid}"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="@dimen/dimen_10dp"/>
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/nid"
+                    android:layout_toStartOf="@+id/pacient_name"
+                    android:layout_toLeftOf="@+id/pacient_name"
+                    android:gravity="right"
+                    android:text="@string/name"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/pacient_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/pacient_nid"
+                    android:layout_alignParentRight="true"
+                    android:text="@{dispense.prescription.patient.fullName}"
+                    android:layout_alignParentEnd="true" />
+
+                <LinearLayout
+                    android:id="@+id/linearAwaitingDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/pacient_name"
+                    android:layout_marginTop="0dp"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/nid_data1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/emptyspace2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/lbl_pick_up_date"
+                    android:gravity="right"
+                    android:text="   " />
+
+                <TextView
+                    android:id="@+id/lbl_pick_up_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/emptyspace3"
+                    android:gravity="right"
+                    android:text="@string/dta_marcada_levantamento"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/emptyspace3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/pick_up_date"
+                    android:gravity="right"
+                    android:text="   " />
+
+                <TextView
+                    android:id="@+id/pick_up_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="@{DateUtilities.formatToDDMMYYYY(dispense.nextPickupDate)}"/>
+
+
+
+                        <TextView
+                            android:id="@+id/regime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@+id/regime_thera"
+                            android:layout_below="@id/lbl_pick_up_date"
+                            android:gravity="right"
+                            android:text="@string/regime_terapeutico"
+                            android:textStyle="bold" />
+
+
+                        <TextView
+                            android:id="@+id/regime_thera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:gravity="right"
+                            android:paddingLeft="@dimen/dimen_4dp"
+                            android:layout_below="@id/pick_up_date"
+                            android:text="@{dispense.prescription.therapeuticRegimen.description}" />
+
+                        <TextView
+                            android:id="@+id/lbl_dispense_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/regime"
+                            android:layout_toLeftOf="@+id/dispense_type"
+                            android:gravity="right"
+                            android:text="@string/dispense_type"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/dispense_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/regime_thera"
+                            android:layout_alignParentRight="true"
+                            android:layout_toLeftOf="@+id/regime_thera"
+                            android:paddingLeft="@dimen/dimen_4dp"
+                            android:text="@{dispense.prescription.dispenseType.description}" />
+                        <TextView
+                            android:id="@+id/lbl_sanitary_unit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/lbl_dispense_type"
+                            android:layout_toLeftOf="@+id/txt_sanitary_unit"
+                            android:gravity="right"
+                            android:text="@string/unidade_sanit_ria"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txt_sanitary_unit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/dispense_type"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginBottom="@dimen/dimen_10dp"
+                            android:paddingLeft="@dimen/dimen_6dp"
+                            android:text="@{dispense.prescription.patient.episodes1.iterator().next().sanitaryUnit}" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearAbsentDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/pacient_name"
+                    android:layout_marginTop="0dp"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/nid_data2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:id="@+id/emptyspace5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/lbl_contact"
+                            android:gravity="right"
+                            android:text="   " />
+
+                        <TextView
+                            android:id="@+id/lbl_contact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@+id/emptyspace6"
+                            android:gravity="right"
+                            android:text="@string/contacto_pessoais"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/emptyspace6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/contact"
+                            android:gravity="right"
+                            android:text="   " />
+
+                        <TextView
+                            android:id="@+id/contact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:text="@{dispense.prescription.patient.phone}"/>
+
+
+                        <TextView
+                            android:id="@+id/lbl_date_missed"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@+id/date_missed"
+                            android:layout_below="@id/lbl_contact"
+                            android:gravity="right"
+                            android:text="@string/date_missed"
+                            android:textStyle="bold" />
+
+
+                        <TextView
+                            android:id="@+id/date_missed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:gravity="right"
+                            android:paddingLeft="@dimen/dimen_4dp"
+                            android:layout_below="@id/contact"
+                            android:text="@{DateUtilities.formatToDDMMYYYY(dispense.nextPickupDate)}" />
+
+                        <TextView
+                            android:id="@+id/lbl_days_missed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/lbl_date_missed"
+                            android:layout_toLeftOf="@+id/days_missed"
+                            android:gravity="right"
+                            android:text="@string/days_missed"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/days_missed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/date_missed"
+                            android:layout_alignParentRight="true"
+                            android:layout_toLeftOf="@+id/date_missed"
+                            android:paddingLeft="@dimen/dimen_4dp"
+                            android:text="@{Utilities.parseLongToString(DateUtilities.getDaysBetween(dispense.nextPickupDate,DateUtilities.getCurrentDate()))}" />
+
+                        <TextView
+                            android:id="@+id/lbl_sanitary_unit_absent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/lbl_days_missed"
+                            android:layout_toLeftOf="@+id/txt_sanitary_unit_absent"
+                            android:gravity="right"
+                            android:text="@string/unidade_sanit_ria"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txt_sanitary_unit_absent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/days_missed"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginBottom="@dimen/dimen_10dp"
+                            android:paddingLeft="@dimen/dimen_6dp"
+                            android:text="@{dispense.prescription.patient.episodes1.iterator().next().sanitaryUnit}" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

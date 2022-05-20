@@ -48,6 +48,8 @@ public interface IDispenseService extends IBaseService<Dispense> {
 
     public List<Dispense> getAbsentPatientsBetweenNextPickppDateStartDateAndEndDateWithLimit( Date startDate, Date endDate, long offset, long limit) throws SQLException;
 
+    public List<Dispense> getActivePatientsBetweenNextPickppDateStartDateAndEndDateWithLimit( Date startDate, Date endDate, long offset, long limit) throws SQLException;
+
     public List<Dispense> getAllDispensesToRemoveByDates(Date dateToRemove) throws SQLException;
 
     public void deleteDispenseAndDispensedDrugs(Dispense dispense) throws SQLException;

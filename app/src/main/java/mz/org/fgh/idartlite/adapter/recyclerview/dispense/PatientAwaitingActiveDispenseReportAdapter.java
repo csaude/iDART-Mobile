@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -15,16 +14,19 @@ import java.util.List;
 import mz.org.fgh.idartlite.R;
 import mz.org.fgh.idartlite.adapter.recyclerview.generic.AbstractRecycleViewAdapter;
 import mz.org.fgh.idartlite.databinding.ContentAwaitingAbsentPatientsReportBinding;
+import mz.org.fgh.idartlite.databinding.ContentAwaitingActivePatientsReportBinding;
 import mz.org.fgh.idartlite.databinding.ItemLoadingBinding;
 import mz.org.fgh.idartlite.model.Dispense;
+import mz.org.fgh.idartlite.model.patient.Patient;
 
-public class PatientAwaitingAbsentDispenseReportAdapter extends AbstractRecycleViewAdapter<Dispense> {
+public class PatientAwaitingActiveDispenseReportAdapter extends AbstractRecycleViewAdapter<Dispense> {
+
 
     private Activity activity;
     private List<Dispense> dispenseList;
     private boolean awaitingReport;
 
-    public PatientAwaitingAbsentDispenseReportAdapter(RecyclerView recyclerView, List<Dispense> dispenseList, Activity activity, boolean awaitingReport) {
+    public PatientAwaitingActiveDispenseReportAdapter(RecyclerView recyclerView, List<Dispense> dispenseList, Activity activity, boolean awaitingReport) {
         super(recyclerView, dispenseList, activity);
         this.awaitingReport=awaitingReport;
     }
@@ -37,7 +39,7 @@ public class PatientAwaitingAbsentDispenseReportAdapter extends AbstractRecycleV
 
 
         if (viewType == VIEW_TYPE_ITEM) {
-            ContentAwaitingAbsentPatientsReportBinding contentAwaitingPatientsReportBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.content_awaiting_absent_patients_report, parent, false);
+            ContentAwaitingActivePatientsReportBinding contentAwaitingPatientsReportBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.content_awaiting_active_patients_report, parent, false);
 
             if(awaitingReport) {
                 contentAwaitingPatientsReportBinding.linearAwaitingDetails.setVisibility(View.VISIBLE);
@@ -45,10 +47,10 @@ public class PatientAwaitingAbsentDispenseReportAdapter extends AbstractRecycleV
                 contentAwaitingPatientsReportBinding.linearAbsentDetails.setVisibility(View.VISIBLE);
             }
 
-            return new DispenseViewHolder(contentAwaitingPatientsReportBinding);
+            return new PatientAwaitingActiveDispenseReportAdapter.DispenseViewHolder(contentAwaitingPatientsReportBinding);
         }  else if (viewType == VIEW_TYPE_LOADING) {
             itemLoadingBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_loading, parent, false);
-            return new PatientAwaitingAbsentDispenseReportAdapter.LoadingViewHolder(itemLoadingBinding);
+            return new PatientAwaitingActiveDispenseReportAdapter.LoadingViewHolder(itemLoadingBinding);
 
         }
         return null;
@@ -56,22 +58,22 @@ public class PatientAwaitingAbsentDispenseReportAdapter extends AbstractRecycleV
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder instanceof PatientAwaitingAbsentDispenseReportAdapter.DispenseViewHolder){
+        if (viewHolder instanceof PatientAwaitingActiveDispenseReportAdapter.DispenseViewHolder){
             Dispense dispense = (Dispense) records.get(position);
-            ((PatientAwaitingAbsentDispenseReportAdapter.DispenseViewHolder) viewHolder).contentAwaitingPatientsReportBinding.setDispense(dispense);
+            ((PatientAwaitingActiveDispenseReportAdapter.DispenseViewHolder) viewHolder).contentAwaitingPatientsReportBinding.setDispense(dispense);
         }else
-        if (viewHolder instanceof PatientAwaitingAbsentDispenseReportAdapter.LoadingViewHolder){
-            showLoadingView((PatientAwaitingAbsentDispenseReportAdapter.LoadingViewHolder) viewHolder, position);
+        if (viewHolder instanceof PatientAwaitingActiveDispenseReportAdapter.LoadingViewHolder){
+            showLoadingView((PatientAwaitingActiveDispenseReportAdapter.LoadingViewHolder) viewHolder, position);
         }
     }
 
 
     public class DispenseViewHolder extends RecyclerView.ViewHolder{
 
-        private ContentAwaitingAbsentPatientsReportBinding contentAwaitingPatientsReportBinding;
+        private ContentAwaitingActivePatientsReportBinding contentAwaitingPatientsReportBinding;
 
 
-        public DispenseViewHolder(@NonNull ContentAwaitingAbsentPatientsReportBinding contentAwaitingPatientsReportBinding) {
+        public DispenseViewHolder(@NonNull ContentAwaitingActivePatientsReportBinding contentAwaitingPatientsReportBinding) {
             super(contentAwaitingPatientsReportBinding.getRoot());
             this.contentAwaitingPatientsReportBinding = contentAwaitingPatientsReportBinding;
         }
@@ -87,5 +89,5 @@ public class PatientAwaitingAbsentDispenseReportAdapter extends AbstractRecycleV
         }
     }
 
-    protected void showLoadingView(PatientAwaitingAbsentDispenseReportAdapter.LoadingViewHolder viewHolder, int position) {}
+    protected void showLoadingView(PatientAwaitingActiveDispenseReportAdapter.LoadingViewHolder viewHolder, int position) {}
 }
