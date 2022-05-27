@@ -8,6 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +23,7 @@ import mz.org.fgh.idartlite.model.Episode;
 import mz.org.fgh.idartlite.model.patient.Patient;
 import mz.org.fgh.idartlite.model.Prescription;
 import mz.org.fgh.idartlite.model.TherapeuticLine;
+import mz.org.fgh.idartlite.util.DateUtilities;
 
 public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implements IDispenseDao {
 
@@ -185,39 +187,24 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
     }
 
     public List<Dispense> getActivePatientsBetweenNextPickppDateStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate, long offset, long limit) throws SQLException {
-
-        QueryBuilder<Prescription, Integer> prescriptionQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPrescriptionDao().queryBuilder();
+        String days = "0";
         QueryBuilder<Episode, Integer> episodeQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getEpisodeDao().queryBuilder();
+        QueryBuilder<Patient, Integer> patientQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPatientDao().queryBuilder();
+        QueryBuilder<Prescription, Integer> prescriptionQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPrescriptionDao().queryBuilder();
+        QueryBuilder<Dispense, Integer> dispenseQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispenseDao().queryBuilder().setAlias("dispenses");
 
-        episodeQb.where().isNotNull(Episode.COLUMN_STOP_REASON);
-        QueryBuilder<Patient, Integer> patientQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPatientDao().queryBuilder().setAlias("patientOuter");
-        patientQb.where().not().in(Patient.COLUMN_ID,episodeQb.selectRaw("patient_id"));
-
-        QueryBuilder<Dispense, Integer> outerDispenseQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispenseDao().queryBuilder().setAlias("outerDispense");
-        QueryBuilder<Dispense, Integer> dispenseQb1 =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispenseDao().queryBuilder();
-        QueryBuilder<Dispense, Integer> dispenseQb2 =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispenseDao().queryBuilder();
-        QueryBuilder<Prescription, Integer> prescriptionQb1 =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPrescriptionDao().queryBuilder();
-        QueryBuilder<Patient, Integer> patientInnerQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPatientDao().queryBuilder().setAlias("patientInner");
-        QueryBuilder<Prescription, Integer> prescriptionInnerQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPrescriptionDao().queryBuilder();
-        QueryBuilder<Patient, Integer> patientInnerQb2 =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPatientDao().queryBuilder();
-
-
+        episodeQb.where().isNotNull(Episode.COLUMN_STOP_REASON); //Retorno: Episodios de Fim
+        dispenseQb.join(prescriptionQb);
         prescriptionQb.groupBy(Prescription.COLUMN_PATIENT_ID).join(patientQb);
-        prescriptionInnerQb.groupBy(Prescription.COLUMN_PATIENT_ID).join(patientInnerQb2);
-        outerDispenseQb.join(prescriptionQb);
-        dispenseQb1.join(prescriptionInnerQb);
-        outerDispenseQb.orderBy(Dispense.COLUMN_NEXT_PICKUP_DATE,true);
-        prescriptionQb1.join(patientInnerQb);
-        dispenseQb2.join(prescriptionQb1);
-        dispenseQb2.where().raw(" patientInner.id=patientOuter.id AND outerDispense.next_pickup_date +3 >= @endDate");
+        patientQb.where().eq(Patient.COLUMN_ID, new ColumnArg(Patient.TABLE_NAME, Patient.COLUMN_ID)).and().not().in(Patient.COLUMN_ID,episodeQb.selectRaw("patient_id"));
 
-        if (limit > 0 && offset > 0) outerDispenseQb.limit(limit).offset(offset);
-        outerDispenseQb.where().ge(Dispense.COLUMN_NEXT_PICKUP_DATE, endDate)
-                .and().in(Dispense.COLUMN_NEXT_PICKUP_DATE,dispenseQb1.selectRaw("max(next_pickup_date)")).and().eq(Dispense.COLUMN_VOIDED,false).and().exists(dispenseQb2);
-        System.out.println(outerDispenseQb.prepareStatementString());
+        dispenseQb.orderBy(Dispense.COLUMN_NEXT_PICKUP_DATE,true);
 
-        return outerDispenseQb.query();
-        //proximo+3 >= data_Fim; e nao tenha episodio do fecho
+        if (limit > 0 && offset > 0) dispenseQb.limit(limit).offset(offset);
+//        dispenseQb.where().ge(Dispense.COLUMN_NEXT_PICKUP_DATE, endDate);
+        dispenseQb.where().raw("Date(dispenses.next_pickup_date, \'+3 days\') >= '"+DateUtilities.formatToYYYYMMDD(endDate)+"'");
+//        System.out.println(dispenseQb.prepareStatementString());
+        return dispenseQb.query();
     }
 
 
