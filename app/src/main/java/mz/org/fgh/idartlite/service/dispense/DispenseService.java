@@ -199,6 +199,10 @@ public class DispenseService extends BaseService<Dispense> implements IDispenseS
         return getDataBaseHelper().getDispenseDao().getDispensesBetweenStartDateAndEndDateWithLimit(getApplication(),startDate,endDate,offset,limit);
     }
 
+    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Date startDate, Date endDate, long offset, long limit) throws SQLException{
+        return getDataBaseHelper().getDispenseDao().getDispensesUsBetweenStartDateAndEndDateWithLimit(getApplication(),startDate,endDate,offset,limit);
+    }
+
     public List<Dispense> getDispensesNonSyncBetweenStartDateAndEndDateWithLimit(Date startDate, Date endDate, long offset, long limit) throws SQLException{
         return getDataBaseHelper().getDispenseDao().getDispensesNonSyncBetweenStartDateAndEndDateWithLimit(startDate,endDate,offset,limit);
     }

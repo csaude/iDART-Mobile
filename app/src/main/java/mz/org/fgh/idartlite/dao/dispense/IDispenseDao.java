@@ -23,6 +23,8 @@ public interface IDispenseDao extends IGenericDao<Dispense, Integer> {
 
     public List<Dispense> getDispensesBetweenStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate,long offset, long limit) throws SQLException;
 
+    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate,long offset, long limit) throws SQLException;
+
     public List<Dispense> getDispensesNonSyncBetweenStartDateAndEndDateWithLimit(Date startDate, Date endDate,long offset, long limit) throws SQLException;
 
     public List<Dispense> getDispensesBetweenStartDateAndEndDate(Application application,Date startDate, Date endDate) throws SQLException;

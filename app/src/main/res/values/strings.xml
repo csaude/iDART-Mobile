@@ -478,6 +478,7 @@ Se a reacção adversa for grave, referir o paciente para a US. </string>
 
     <string name="pacientes_suspeitos_tb" translatable="false">Relatorio de Suspeitos de TB</string>
     <string name="pacientes_rastreados_tb" translatable="false">Relatorio de Pacientes Rastreados para TB</string>
+    <string name="pacientes_que_levantaram_na_us">Pacientes que levantaram na US</string>
 
     <string name="encounter_date">Data da Consulta</string>
 
