@@ -1,5 +1,6 @@
 package mz.org.fgh.idartlite.rest.service.ClinicInfo;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.util.Log;
 
@@ -129,6 +130,7 @@ public class RestClinicInfoService extends BaseRestService {
                         handler.addHeader("Content-Type", "application/json");
                         handler.objectRequest(url, Request.Method.GET, null, Object[].class, new Response.Listener<Object[]>() {
 
+                            @SuppressLint("SuspiciousIndentation")
                             @Override
                             public void onResponse(Object[] clinicInformList) {
                                 try {
