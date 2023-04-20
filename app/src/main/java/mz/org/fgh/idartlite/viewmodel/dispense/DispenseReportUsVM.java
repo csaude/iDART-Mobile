@@ -50,7 +50,7 @@ public class DispenseReportUsVM extends SearchVM<Dispense> {
     }
 
     public List<Dispense> getDispensesByDates(Date startDate, Date endDate, long offset, long limit) throws SQLException {
-        return dispenseService.getDispensesBetweenStartDateAndEndDateWithLimit(startDate, endDate,offset,limit);
+        return dispenseService.getDispensesUsBetweenStartDateAndEndDateWithLimit(startDate, endDate,offset,limit);
     }
 
     @Override

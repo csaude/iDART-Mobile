@@ -321,7 +321,7 @@ public class DispenseReportUsActivity extends BaseActivity {
         Font f = new Font(Font.FontFamily.TIMES_ROMAN, 16.0f, Font.UNDERLINE, BaseColor.RED);
         Font g = new Font(Font.FontFamily.TIMES_ROMAN, 20.0f, Font.NORMAL, BaseColor.RED);
 
-        Paragraph titulo = new Paragraph("Histórico de Levantamentos na Unidade Sanitaria \n", g);
+        Paragraph titulo = new Paragraph("Histórico de Levantamentos efectuados na Unidade Sanitaria \n", g);
         titulo.setAlignment(Element.ALIGN_CENTER);
 
         Paragraph subTitulo = new Paragraph("Período de "+DateUtilities.formatToDDMMYYYY(getRelatedViewModel().getSearchParams().getStartdate())+" à "+DateUtilities.formatToDDMMYYYY(getRelatedViewModel().getSearchParams().getEndDate())+ "\n\n", f);
