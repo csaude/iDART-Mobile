@@ -426,6 +426,8 @@ Se a reacção adversa for grave, referir o paciente para a US. </string>
     <string name="awaiting_patients_report">Pacientes Esperados no Periodo</string>
     <string name="absent_patients_report">Pacientes Faltosos no Periodo</string>
     <string name="active_patients_report">Pacientes Activos no Periodo</string>
+    
+    <string name="pacientes_que_levantaram_na_us">Pacientes que levantaram na US</string>
     <string name="stock_list_report">Lista de Stock</string>
     <string name="fnm">FNM</string>
     <string name="entrances">Entradas</string>
