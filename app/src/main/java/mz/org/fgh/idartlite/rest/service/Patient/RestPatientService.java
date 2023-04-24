@@ -43,6 +43,7 @@ import mz.org.fgh.idartlite.model.User;
 import mz.org.fgh.idartlite.model.patient.Patient;
 import mz.org.fgh.idartlite.model.patient.PatientAttribute;
 import mz.org.fgh.idartlite.rest.helper.RESTServiceHandler;
+import mz.org.fgh.idartlite.rest.service.ClinicInfo.RestClinicInfoService;
 import mz.org.fgh.idartlite.savelogs.SaveLogsInStorage;
 import mz.org.fgh.idartlite.service.clinic.ClinicSectorService;
 import mz.org.fgh.idartlite.service.clinic.ClinicService;
@@ -132,12 +133,14 @@ public class RestPatientService extends BaseRestService {
                                         if (!patientService.checkPatient(itemresult)) {
                                             patientObj = patientService.saveOnPatient(itemresult);
                                             newPatients.add(new Patient(itemresult.get("uuidopenmrs").toString()));
+                                            RestClinicInfoService.getRestLastClinicInfo(patientObj);
                                         } else {
                                             patientObj = patientService.updateOnPatientViaRest(itemresult);
                                             newPatients.add(new Patient());
                                             Log.i(TAG, "onResponse: " + patient + " Ja Existe");
                                         }
                                         restPatchSyncStatus(patientObj, BaseModel.SYNC_SATUS_SENT);
+                                        RestClinicInfoService.getRestLastClinicInfo(patientObj);
                                     } catch (Exception e) {
                                         log.saveErrorLogs(TAG, "Ocorreu um erro ao Buscar Pacientes: [ Patient: " + patient + "]: \n " + e);
                                     } finally {
