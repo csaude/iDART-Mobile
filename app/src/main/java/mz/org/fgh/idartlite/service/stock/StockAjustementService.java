@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import mz.org.fgh.idartlite.base.service.BaseService;
+import mz.org.fgh.idartlite.model.Stock;
 import mz.org.fgh.idartlite.model.StockAjustment;
 import mz.org.fgh.idartlite.model.User;
 import mz.org.fgh.idartlite.model.inventory.Iventory;
@@ -54,6 +55,11 @@ public class StockAjustementService extends BaseService<StockAjustment> implemen
                 save(ajustment);
             }
         }
+    }
+
+    @Override
+    public List<StockAjustment> getAllOfStock(Stock stock) throws SQLException {
+        return getDataBaseHelper().getStockAjustmentDao().getAllOfStock(stock);
     }
 
     @Override

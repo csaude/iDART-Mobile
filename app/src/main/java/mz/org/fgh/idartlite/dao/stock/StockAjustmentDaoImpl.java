@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import mz.org.fgh.idartlite.dao.generic.GenericDaoImpl;
+import mz.org.fgh.idartlite.model.Stock;
 import mz.org.fgh.idartlite.model.StockAjustment;
 import mz.org.fgh.idartlite.model.inventory.Iventory;
 
@@ -27,5 +28,10 @@ public class StockAjustmentDaoImpl extends GenericDaoImpl<StockAjustment, Intege
     @Override
     public List<StockAjustment> getAllOfInventory(Iventory iventory) throws SQLException {
         return queryBuilder().where().eq(StockAjustment.COLUMN_IVENTORY_ID, iventory.getId()).query();
+    }
+
+    @Override
+    public List<StockAjustment> getAllOfStock(Stock stock) throws SQLException {
+        return queryBuilder().orderBy(StockAjustment.COLUMN_DATE,false).where().eq(StockAjustment.COLUMN_STOCK_ID, stock.getId()).query();
     }
 }
