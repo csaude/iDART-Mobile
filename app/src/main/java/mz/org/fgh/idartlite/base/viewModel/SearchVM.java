@@ -2,6 +2,7 @@ package mz.org.fgh.idartlite.base.viewModel;
 
 import android.app.Application;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Bindable;

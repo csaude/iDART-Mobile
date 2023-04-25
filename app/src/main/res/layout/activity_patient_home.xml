@@ -150,7 +150,7 @@
                             android:drawableTop="@drawable/ic_load_patient"
                             android:layout_gravity="center"
                             android:onClick="@{()-> viewModel.callSearchPatient(@string/online)}"
-                            android:text="@{viewModel.currentClinic.isPrivatClinic ?  @string/carregar_paciente : @string/carregar_paciente_faltoso}"/>
+                            android:text="@{viewModel.currentClinic.isPrivateOrComunitClinic ?  @string/carregar_paciente : @string/carregar_paciente_faltoso}"/>
                 </LinearLayout>
                 <!--LinearLayout
                     android:layout_width="@dimen/dimen_0dp"

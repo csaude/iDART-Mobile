@@ -133,7 +133,6 @@ public class RestPatientService extends BaseRestService {
                                         if (!patientService.checkPatient(itemresult)) {
                                             patientObj = patientService.saveOnPatient(itemresult);
                                             newPatients.add(new Patient(itemresult.get("uuidopenmrs").toString()));
-                                            RestClinicInfoService.getRestLastClinicInfo(patientObj);
                                         } else {
                                             patientObj = patientService.updateOnPatientViaRest(itemresult);
                                             newPatients.add(new Patient());
@@ -231,7 +230,7 @@ public class RestPatientService extends BaseRestService {
     }
 
 
-    public static void restGetPatientByNidOrNameOrSurname(String nid, String name, String surname, RestResponseListener listener) {
+    public static void restGetPatientByNidOrNameOrSurname(String nid, String name, String surname,long offset, long limit, RestResponseListener listener) {
         final boolean finished = false;
 
         clinicService = new ClinicService(getApp(), null);
@@ -254,7 +253,8 @@ public class RestPatientService extends BaseRestService {
             Clinic finalClinic = clinic;
             Map<String, Province> finalProvinceMap = provinceMap;
             getRestServiceExecutor().execute(() -> {
-                String url = BaseRestService.baseUrl + "/patient?or=(patientid.like.*" + nid + "*" + ",firstnames.like.*" + name + "*" + ",lastname.like.*" + surname + "*) &patient_sector.stopdate=eq.null";
+                String url = BaseRestService.baseUrl + "/sync_temp_patients?or=(patientid.like.*" + nid + "*" + ",firstnames.like.*" + name + "*" + ",lastname.like.*" + surname + "*)&offset=" + offset +
+                        "&limit=" + limit;
 
 
                 RESTServiceHandler handler = new RESTServiceHandler();
@@ -264,17 +264,19 @@ public class RestPatientService extends BaseRestService {
                     @Override
                     public void onResponse(Object[] patients) {
                         Log.d("Response", String.valueOf(patients.length));
-
                         if (patients.length > 0) {
                             for (Object patient : patients) {
                                 Log.i(TAG, "onResponse: " + patient);
-
+                                Patient patientObj;
                                 LinkedTreeMap<String, Object> patientRest = (LinkedTreeMap<String, Object>) patient;
+                                if (patientRest.get("uuidopenmrs") !="" && patientRest.get("uuidopenmrs") != null ) {
                                 Patient localPatient = new Patient();
-
-                                String concatAdrees = getFullAdreess(Objects.requireNonNull(patientRest.get("address1")).toString(),
-                                        Objects.requireNonNull(patientRest.get("address2")).toString(),
-                                        Objects.requireNonNull(patientRest.get("address3")).toString());
+                                String address1 = patientRest.get("address1") == null ? "" : patientRest.get("address1").toString();
+                                String address2 = patientRest.get("address2") == null ? "" : patientRest.get("address2").toString();
+                                String address3 = patientRest.get("address3") == null ? "" : patientRest.get("address3").toString();
+                                String concatAdrees = getFullAdreess(Objects.requireNonNull(address1),
+                                        Objects.requireNonNull(address2),
+                                        Objects.requireNonNull(address3));
 
                                 localPatient.setProvince(finalProvinceMap.get(Objects.requireNonNull(patientRest.get("province")).toString()));
                                 localPatient.setAddress(concatAdrees);
@@ -289,13 +291,29 @@ public class RestPatientService extends BaseRestService {
                                 if ((patientRest.get("datainiciotarv") != null)) {
                                     localPatient.setStartARVDate(getSqlDateFromString(Objects.requireNonNull(patientRest.get("datainiciotarv")).toString(), "dd MMM yyyy"));
                                 }
+
+                                try {
+                                    if (!patientService.checkPatient(patientRest)) {
+                                        patientObj = patientService.saveOnPatient(patientRest);
+                                        newPatients.add(new Patient(patientRest.get("uuidopenmrs").toString()));
+                                    } else {
+                                        patientObj = patientService.updateOnPatientViaRest(patientRest);
+                                        Log.i(TAG, "onResponse: " + patient + " Ja Existe");
+                                    }
+                                    RestClinicInfoService.getRestLastClinicInfo(patientObj);
+                                    restPatchSyncStatus(patientObj, BaseModel.SYNC_SATUS_SENT);
+                                } catch (Exception e) {
+                                }
                                 localPatient.addAttribute(PatientAttribute.fastCreateByCode(Objects.requireNonNull(patientRest.get("estadopaciente")).toString(), localPatient));
                                 newPatients.add(localPatient);
                             }
+                            }
+
                         } else {
+                            listener.doOnResponse(REQUEST_NO_DATA, null);
                             Log.w(TAG, "Response Sem Info." + patients.length);
                         }
-                        listener.doOnRestSucessResponseObjects("sucess", newPatients);
+                        listener.doOnResponse(BaseRestService.REQUEST_SUCESS, newPatients);
                     }
                 }, new Response.ErrorListener() {
                     @Override
