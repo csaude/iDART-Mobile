@@ -114,16 +114,21 @@ public class NewPatientSearchVM extends SearchVM<Patient> {
     }
 
     @Override
-    protected void doOnNoRecordFound() {
+    public void doOnlineSearch(long offset, long limit) throws SQLException {
         //Utilities.displayAlertDialog(getRelatedActivity(),getRelatedActivity().getString(R.string.no_search_results)).show();
 
        // if(getRelatedActivity().)
       //  Utilities.displayConfirmationDialog(getRelatedActivity(), getRelatedActivity().getString(R.string.would_like_create_patient), getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), ((NewPatientSearchActivity)getRelatedActivity())).show();
 
-      RestPatientService.restGetPatientByNidOrNameOrSurname(getSearchParams().getNid(), getSearchParams().getName(), getSearchParams().getSurName(), this.getRelatedActivity());
+      RestPatientService.restGetPatientByNidOrNameOrSurname(getSearchParams().getNid(), getSearchParams().getName(), getSearchParams().getSurName(), offset, limit,this.getRelatedActivity());
 
 
     //    displaySearchResults();
+    }
+
+    @Override
+    protected void doOnNoRecordFound() {
+
     }
 
     @Override
