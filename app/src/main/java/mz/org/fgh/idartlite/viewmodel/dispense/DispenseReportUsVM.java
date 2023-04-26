@@ -90,7 +90,8 @@ public class DispenseReportUsVM extends SearchVM<Dispense> {
     @Override
     public void doOnlineSearch(long offset, long limit) throws SQLException {
         super.doOnlineSearch(offset, limit);
-        RestDispenseService.restGetAllDispenseByPeriod(getSearchParams().getStartdate(), getSearchParams().getEndDate(), getCurrentClinic().getUuid() ,offset,limit, this);
+        boolean isUsDispenses = true;
+        RestDispenseService.restGetAllDispenseByPeriod(getSearchParams().getStartdate(), getSearchParams().getEndDate(), getCurrentClinic().getUuid() ,offset,limit, this, isUsDispenses);
     }
 
     @Override
