@@ -16,6 +16,7 @@ import mz.org.fgh.idartlite.base.rest.ServiceWatcher;
 import mz.org.fgh.idartlite.base.service.BaseService;
 import mz.org.fgh.idartlite.model.AppSettings;
 import mz.org.fgh.idartlite.model.ClinicInformation;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.Dispense;
 import mz.org.fgh.idartlite.model.patient.Patient;
 import mz.org.fgh.idartlite.model.Prescription;
@@ -24,6 +25,8 @@ import mz.org.fgh.idartlite.service.clinicInfo.ClinicInfoService;
 import mz.org.fgh.idartlite.service.clinicInfo.IClinicInfoService;
 import mz.org.fgh.idartlite.service.dispense.DispenseService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseService;
+import mz.org.fgh.idartlite.service.drug.DiseaseTypeService;
+import mz.org.fgh.idartlite.service.drug.IDiseaseTypeService;
 import mz.org.fgh.idartlite.service.patient.IPatientService;
 import mz.org.fgh.idartlite.service.patient.PatientService;
 import mz.org.fgh.idartlite.service.prescription.IPrescriptionService;
@@ -56,6 +59,7 @@ public class RemoveDataSyncWorker extends Worker {
         IAppSettingsService appSettings = new AppSettingsService(BaseService.getApp(), null);
         IIventoryService inventoryService = new IventoryService(BaseService.getApp(), null);
         IPatientService patientService = new PatientService(BaseService.getApp(), null);
+        IDiseaseTypeService diseaseTypeService = new DiseaseTypeService(BaseService.getApp(), null);
 
         ServiceWatcher watcher = ServiceWatcher.fastCreate(ServiceWatcher.TYPE_REMOVAL);
 
@@ -67,59 +71,63 @@ public class RemoveDataSyncWorker extends Worker {
 
             List<Patient> patients = patientService.getALLPatient();
 
+            List<DiseaseType> diseaseTypes = diseaseTypeService.getAllDiseaseTypes();
+
             for (Patient patient: patients) {
+                List<ClinicInformation> clinicInformationsToRemove = clinicInfoService.getAllClinicInformationToRemoveByDateAndPatient(patient,dateToRemove);
+                for (DiseaseType diseaseType: diseaseTypes) {
 
-            List<Prescription> prescriptions = prescriptionService.getAllPrescriptionToRemoveByDateAndPatient(patient,dateToRemove);
-            List<ClinicInformation> clinicInformationsToRemove = clinicInfoService.getAllClinicInformationToRemoveByDateAndPatient(patient,dateToRemove);
-            List<Dispense> dispensesToRemove = new ArrayList<>();
-            List<Prescription> prescriptionsToRemove = new ArrayList<>();
-            boolean  cantRemovePrescription = false;
-            Prescription lastPrescriptionDb= prescriptionService.getLastPatientPrescription(patient);
+                    List<Prescription> prescriptions = prescriptionService.getAllPrescriptionToRemoveByDateAndPatientAndDiseaseType(patient, diseaseType, dateToRemove);
 
-           if(!prescriptions.isEmpty()) {
-               Prescription lastPrescription = prescriptions.get(0);
+                    List<Dispense> dispensesToRemove = new ArrayList<>();
+                    List<Prescription> prescriptionsToRemove = new ArrayList<>();
+                    boolean cantRemovePrescription = false;
+                    Prescription lastPrescriptionDb = prescriptionService.getLastPatientPrescriptionByDiseaseType(patient, diseaseType);
+
+                    if (!prescriptions.isEmpty()) {
+                        Prescription lastPrescription = prescriptions.get(0);
 
 
-               if(lastPrescription.equals(lastPrescriptionDb)) {
+                        if (lastPrescription.equals(lastPrescriptionDb)) {
 
-                   List<Dispense> dispenses= dispenseService.getAllDispensesByPrescription(lastPrescriptionDb);
+                            List<Dispense> dispenses = dispenseService.getAllDispensesByPrescription(lastPrescriptionDb);
 
-                   int totalPrescriptionSupply = lastPrescriptionDb.getSupply();
-                  if(Utilities.listHasElements(dispenses)){
-                      totalPrescriptionSupply -= dispenses.get(0).getSupply();
-                      dispenses.remove(0);
-                  }
+                            int totalPrescriptionSupply = lastPrescriptionDb.getSupply();
+                            if (Utilities.listHasElements(dispenses)) {
+                                totalPrescriptionSupply -= dispenses.get(0).getSupply();
+                                dispenses.remove(0);
+                            }
 
-                   for (Dispense dispense : dispenses){
-                       if(!dispense.isSyncStatusReady(dispense.getSyncStatus()) || dispense.isVoided())
-                       {
-                           dispensesToRemove.add(dispense);
-                       }
-                       totalPrescriptionSupply -= dispense.getSupply();
-                   }
-                   lastPrescriptionDb.setSupply(totalPrescriptionSupply);
-                   prescriptions.remove(0);
-               }
+                            for (Dispense dispense : dispenses) {
+                                if (!dispense.isSyncStatusReady(dispense.getSyncStatus()) || dispense.isVoided()) {
+                                    dispensesToRemove.add(dispense);
+                                }
+                                totalPrescriptionSupply -= dispense.getSupply();
+                            }
+                            lastPrescriptionDb.setSupply(totalPrescriptionSupply);
+                            prescriptions.remove(0);
+                        }
 
-               for (Prescription prescriptionToRemove:
-                       prescriptions) {
+                        for (Prescription prescriptionToRemove :
+                                prescriptions) {
 
-                  List<Dispense> dispenses= dispenseService.getAllDispensesByPrescription(prescriptionToRemove);
+                            List<Dispense> dispenses = dispenseService.getAllDispensesByPrescription(prescriptionToRemove);
 
-                   for (Dispense dispense:
-                        dispenses) {
-                       if(!dispense.isSyncStatusReady(dispense.getSyncStatus()) || dispense.isVoided())
-                       {
-                           dispensesToRemove.add(dispense);
-                       } else {
-                           cantRemovePrescription = true;
-                       }
-                   }
+                            for (Dispense dispense :
+                                    dispenses) {
+                                if (!dispense.isSyncStatusReady(dispense.getSyncStatus()) || dispense.isVoided()) {
+                                    dispensesToRemove.add(dispense);
+                                } else {
+                                    cantRemovePrescription = true;
+                                }
+                            }
 
-                   if(!cantRemovePrescription) prescriptionsToRemove.add(prescriptionToRemove);
-               }
+                            if (!cantRemovePrescription)
+                                prescriptionsToRemove.add(prescriptionToRemove);
+                        }
 
-           }
+                    }
+
 
                 if ( Utilities.listHasElements(clinicInformationsToRemove)) {
                     ClinicInformation clinicInformationFirst = clinicInformationsToRemove.get(0);
@@ -142,7 +150,7 @@ public class RemoveDataSyncWorker extends Worker {
 
                 prescriptionService.updatePrescriptionEntity(lastPrescriptionDb);
            }
-
+            }
 
            try {
                 List<Iventory> inventorysToRemove = inventoryService.getPastInventoryToRemove(dateToRemove);

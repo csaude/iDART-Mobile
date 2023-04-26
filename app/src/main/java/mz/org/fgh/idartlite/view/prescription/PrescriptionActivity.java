@@ -3,6 +3,7 @@ package mz.org.fgh.idartlite.view.prescription;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,6 +33,8 @@ import mz.org.fgh.idartlite.base.viewModel.BaseViewModel;
 import mz.org.fgh.idartlite.common.ApplicationStep;
 import mz.org.fgh.idartlite.databinding.ActivityPrescriptionBinding;
 import mz.org.fgh.idartlite.listener.dialog.IDialogListener;
+import mz.org.fgh.idartlite.listener.dialog.IDiseaseTypeDialogListener;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.DispenseType;
 import mz.org.fgh.idartlite.model.Drug;
 import mz.org.fgh.idartlite.model.patient.Patient;
@@ -60,6 +63,7 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
     private ListableSpinnerAdapter regimenArrayAdapter;
     private ListableSpinnerAdapter motiveAdapter;
     private ListableSpinnerAdapter durationAdapter;
+    private ListableSpinnerAdapter prophylaxyFollowUpAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,9 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
             Bundle bundle = intent.getExtras();
             if(bundle != null) {
                 getRelatedViewModel().getPrescription().setPatient((Patient) bundle.getSerializable("patient"));
+                if (getRelatedViewModel().getSelectedOption() != null) {
+                    getRelatedViewModel().getPrescription().setDiseaseType(getRelatedViewModel().getDiseaseTypeByCode(getRelatedViewModel().getSelectedOption()));
+                }
                 if (getRelatedViewModel().getPrescription().getPatient() == null){
                     getRelatedViewModel().setPrescription((Prescription) bundle.getSerializable("prescription"));
                     if (getRelatedViewModel().getPrescription() == null) {
@@ -100,6 +107,7 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
             }
         }
 
+
         if (getApplicationStep().isApplicationstepCreate() || getApplicationStep().isApplicationStepEdit()){
             getRelatedViewModel().setViewListRemoveButton(true);
         }
@@ -108,7 +116,7 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
             this.getRelatedViewModel().checkInEditIfPrescriptionMustBeSpecial();
         }
 
-        if (getApplicationStep().isApplicationstepCreate() && !getRelatedViewModel().checkIfPatientHasPrescriptions()){
+        if (getApplicationStep().isApplicationstepCreate() && !getRelatedViewModel().checkIfPatientHasPrescriptionsByDiseaseType()){
             try {
 
 
@@ -129,10 +137,16 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
 
         populateForm();
 
-        if(!getRelatedViewModel().checkIfPatientHasPrescriptions()){
+        if(!getRelatedViewModel().checkIfPatientHasPrescriptionsByDiseaseType()){
             loadSelectedPrescriptionToForm();
 
 
+        }
+        if (!getRelatedViewModel().getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV")) {
+            this.prescriptionBinding.lblLinhaTerap.setVisibility(View.GONE);
+            this.prescriptionBinding.spnLine.setVisibility(View.GONE);
+            this.prescriptionBinding.lblProphyFollow.setVisibility(View.VISIBLE);
+            this.prescriptionBinding.spnProphyFollow.setVisibility(View.VISIBLE);
         }
         changeMotiveSpinnerStatus(getRelatedViewModel().getPrescription().isUrgent());
 
@@ -219,7 +233,7 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
         try {
             List<TherapeuticRegimen> therapeuticRegimenList = new ArrayList<>();
             therapeuticRegimenList.add(new TherapeuticRegimen());
-            therapeuticRegimenList.addAll(getRelatedViewModel().getAllTherapeuticRegimen());
+            therapeuticRegimenList.addAll(getRelatedViewModel().getAllTherapeuticRegimenByDiseaseType(this.getRelatedViewModel().getPrescription().getDiseaseType()));
 
             List<TherapeuticLine> therapeuticLines = new ArrayList<>();
             therapeuticLines.add(new TherapeuticLine());
@@ -248,6 +262,11 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
             motiveAdapter = new ListableSpinnerAdapter(this, R.layout.simple_auto_complete_item, getRelatedViewModel().getMotives());
             prescriptionBinding.spnReson.setAdapter(motiveAdapter);
             prescriptionBinding.setMotiveAdapter(motiveAdapter);
+
+            prophylaxyFollowUpAdapter = new ListableSpinnerAdapter(this, R.layout.simple_auto_complete_item, getRelatedViewModel().getProphylaxyFollowUp());
+            prescriptionBinding.spnProphyFollow.setAdapter(prophylaxyFollowUpAdapter);
+            prescriptionBinding.setProphylaxyFollowUpAdapter(prophylaxyFollowUpAdapter);
+
 
         } catch (SQLException e) {
             Utilities.displayAlertDialog(PrescriptionActivity.this, getString(R.string.error_loading_form_data)+e.getMessage());
@@ -359,6 +378,7 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
         prescriptionBinding.autCmpDrugs.setEnabled(status);
         prescriptionBinding.spnDuration.setEnabled(status);
         prescriptionBinding.spnReson.setEnabled(status);
+        prescriptionBinding.spnProphyFollow.setEnabled(status);
     }
 
     public ActivityPrescriptionBinding getPrescriptionBinding() {
@@ -372,4 +392,7 @@ public class PrescriptionActivity extends BaseActivity implements IDialogListene
     public void enableAllSpinners(){
         changeAllSpinnersStatus(true);
     }
+
+
+
 }

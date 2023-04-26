@@ -488,4 +488,9 @@ Se a reacção adversa for grave, referir o paciente para a US. </string>
     <string name="online">online</string>
 
     <string name="graphic_report_dispense_by_regime">Gráfico de Levantamentos por regime</string>
+
+    <string name="diseaseCodeTarv">TARV</string>
+    <string name="prophylaxy_follow_up">Seguimento de Profilaxia</string>
+
+    <string name="disease_type_pop_up_title">Selectione o Tipo de Doença</string>
 </resources>

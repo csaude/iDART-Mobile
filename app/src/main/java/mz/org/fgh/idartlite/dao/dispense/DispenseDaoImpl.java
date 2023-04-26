@@ -55,7 +55,7 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
         prescriptionQb.where().eq(Prescription.COLUMN_PATIENT_ID, patient.getId());
 
         QueryBuilder<TherapeuticLine, Integer> therapeuticLineQb = IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getTherapeuticLineDao().queryBuilder();
-        prescriptionQb.join(therapeuticLineQb);
+        prescriptionQb.leftJoin(therapeuticLineQb);
 
         QueryBuilder<Dispense, Integer> dispenseQb =   IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispenseDao().queryBuilder();
         dispenseQb.join(prescriptionQb).where().eq(Dispense.COLUMN_VOIDED,false);

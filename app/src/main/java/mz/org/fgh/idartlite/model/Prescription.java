@@ -38,7 +38,8 @@ public class Prescription extends BaseModel {
 	public static final String COLUMN_PRESCRIPTION_SEQ = "prescription_seq";
 	public static final String COLUMN_UUID = "uuid";
 	public static final String COLUMN_PATIENT_ID = "patient_id";
-
+	public static final String COLUMN_DISEASE_TYPE_ID = "disease_type_id";
+	public static final String COLUMN_PROPHYLAXY_FOLLOW_UP = "prophylaxy_follow_up";
 
 	public static final String DURATION_TWO_WEEKS = "2 Semanas";
 	public static final String DURATION_ONE_MONTH = "1 Mês";
@@ -69,7 +70,7 @@ public class Prescription extends BaseModel {
 	@DatabaseField(columnName = COLUMN_URGENT_NOTES)
 	private String urgentNotes;
 
-	@DatabaseField(columnName = COLUMN_REGIMEN_ID, canBeNull = true, foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(columnName = COLUMN_REGIMEN_ID, canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private TherapeuticRegimen therapeuticRegimen;
 
 	@DatabaseField(columnName = COLUMN_LINE_ID, canBeNull = true, foreign = true, foreignAutoRefresh = true)
@@ -90,9 +91,23 @@ public class Prescription extends BaseModel {
 	@DatabaseField(columnName = COLUMN_SYNC_STATUS)
 	private String syncStatus;
 
+	@DatabaseField(columnName = COLUMN_DISEASE_TYPE_ID, canBeNull = false, foreign = true, foreignAutoRefresh = true)
+	private DiseaseType diseaseType;
+
+	@DatabaseField(columnName = COLUMN_PROPHYLAXY_FOLLOW_UP, canBeNull = true)
+	private String prophylaxyFollowUp;
+
 	private List<PrescribedDrug> prescribedDrugs;
 
 	private List<Dispense> dispenses;
+
+	public String getProphylaxyFollowUp() {
+		return prophylaxyFollowUp;
+	}
+
+	public void setProphylaxyFollowUp(String prophylaxyFollowUp) {
+		this.prophylaxyFollowUp = prophylaxyFollowUp;
+	}
 
 	public int getId() {
 		return id;
@@ -207,6 +222,14 @@ public class Prescription extends BaseModel {
 		this.prescribedDrugs = prescribedDrugs;
 	}
 
+	public void setDiseaseType(DiseaseType diseaseType) {
+		this.diseaseType = diseaseType;
+	}
+
+	public DiseaseType getDiseaseType() {
+		return diseaseType;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -304,7 +327,7 @@ public class Prescription extends BaseModel {
 		if(this.supply <= 0) return context.getString(R.string.prescription_durationmandatory);
 		if(this.dispenseType == null || !Utilities.stringHasValue(this.dispenseType.getDescription())) return context.getString(R.string.prescription_dispense_type_mandatory);
 		if(this.therapeuticRegimen == null || !Utilities.stringHasValue(this.therapeuticRegimen.getDescription())) return context.getString(R.string.regimen_mandatory);
-		if(this.therapeuticLine == null || !Utilities.stringHasValue(this.therapeuticLine.getDescription())) return context.getString(R.string.prescription_line_mandatory);
+		if((this.therapeuticLine == null && this.diseaseType.getCode() == "TARV" || this.diseaseType.getCode() == "TARV" && !Utilities.stringHasValue(this.therapeuticLine.getDescription()))) return context.getString(R.string.prescription_line_mandatory);
 
 		if (!Utilities.listHasElements(this.prescribedDrugs)) return context.getString(R.string.prescription_drugs_mandatory);
 		if (isUrgent() && !Utilities.stringHasValue(this.urgentNotes)) return context.getString(R.string.prescription_urgent_notes_mandatory);

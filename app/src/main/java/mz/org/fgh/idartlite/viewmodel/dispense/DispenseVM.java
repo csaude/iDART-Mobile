@@ -20,6 +20,7 @@ import mz.org.fgh.idartlite.base.model.BaseModel;
 import mz.org.fgh.idartlite.base.service.IBaseService;
 import mz.org.fgh.idartlite.base.viewModel.BaseViewModel;
 import mz.org.fgh.idartlite.model.Clinic;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.Dispense;
 import mz.org.fgh.idartlite.model.DispensedDrug;
 import mz.org.fgh.idartlite.model.Drug;
@@ -149,9 +150,9 @@ public class DispenseVM extends BaseViewModel {
         this.dispenseService.createDispense(dispense);
     }
 
-    public Prescription getLastPatientPrescription(Patient patient) throws SQLException {
+    public Prescription getLastPatientPrescriptionByDiseaseType(Patient patient, DiseaseType diseaseType) throws SQLException {
 
-        return this.prescriptionService.getLastPatientPrescription(patient);
+        return this.prescriptionService.getLastPatientPrescriptionByDiseaseType(patient, diseaseType);
     }
 
     public Dispense getLastPatientDispense(Prescription prescription) throws SQLException {
@@ -313,7 +314,7 @@ public class DispenseVM extends BaseViewModel {
 
     public String dispenseOnDateBeforePickupDate() {
         try {
-            Prescription prescription = this.getLastPatientPrescription(getDispense().getPrescription().getPatient());
+            Prescription prescription = this.getLastPatientPrescriptionByDiseaseType(getDispense().getPrescription().getPatient(), getDispense().getPrescription().getDiseaseType());
             Dispense dispense = this.getLastPatientDispense(prescription);
 
             if (dispense != null) {

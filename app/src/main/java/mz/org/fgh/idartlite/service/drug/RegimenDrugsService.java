@@ -50,7 +50,8 @@ public class RegimenDrugsService extends BaseService<RegimenDrug> implements IRe
                 try {
                     LinkedTreeMap<String, Object> itemresult = (LinkedTreeMap<String, Object>) drug;
 
-                    if (Utilities.stringHasValue((String) itemresult.get("atccode_id")) && ((String) itemresult.get("atccode_id")).length() > 2) {
+                    if (Utilities.stringHasValue((String) itemresult.get("atccode_id"))
+                            && (((String) itemresult.get("atccode_id")).length() > 2) && ((Boolean) itemresult.get("active") == true)) {
 
                         Drug localDrug = drugService.getDrugByFNMCode(Objects.requireNonNull(itemresult.get("atccode_id")).toString());
 

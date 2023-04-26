@@ -104,6 +104,7 @@ public class PrescriptionFragment extends GenericFragment implements IListbleDia
             params.put("clinic", getMyActivity().getCurrentClinic());
             params.put("step", ApplicationStep.STEP_CREATE);
             params.put("clinicSector", getMyActivity().getClinicSector());
+            // params.put("diseaseType" , selec)
             nextActivityFinishingCurrent(PrescriptionActivity.class, params);
         }
     }

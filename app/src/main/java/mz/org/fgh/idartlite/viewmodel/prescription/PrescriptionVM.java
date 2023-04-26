@@ -1,16 +1,23 @@
 package mz.org.fgh.idartlite.viewmodel.prescription;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.Bindable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mz.org.fgh.idartlite.BR;
 import mz.org.fgh.idartlite.R;
@@ -19,6 +26,9 @@ import mz.org.fgh.idartlite.base.activity.BaseActivity;
 import mz.org.fgh.idartlite.base.model.BaseModel;
 import mz.org.fgh.idartlite.base.service.IBaseService;
 import mz.org.fgh.idartlite.base.viewModel.BaseViewModel;
+import mz.org.fgh.idartlite.listener.dialog.IDialogListener;
+import mz.org.fgh.idartlite.listener.dialog.IDiseaseTypeDialogListener;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.DispenseType;
 import mz.org.fgh.idartlite.model.Drug;
 import mz.org.fgh.idartlite.model.patient.Patient;
@@ -30,7 +40,9 @@ import mz.org.fgh.idartlite.service.dispense.DispenseService;
 import mz.org.fgh.idartlite.service.dispense.DispenseTypeService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseTypeService;
+import mz.org.fgh.idartlite.service.drug.DiseaseTypeService;
 import mz.org.fgh.idartlite.service.drug.DrugService;
+import mz.org.fgh.idartlite.service.drug.IDiseaseTypeService;
 import mz.org.fgh.idartlite.service.drug.IDrugService;
 import mz.org.fgh.idartlite.service.drug.ITherapeuthicLineService;
 import mz.org.fgh.idartlite.service.drug.ITherapheuticRegimenService;
@@ -46,8 +58,10 @@ import mz.org.fgh.idartlite.view.patientPanel.PatientPanelActivity;
 import mz.org.fgh.idartlite.view.patientPanel.PrescriptionFragment;
 import mz.org.fgh.idartlite.view.prescription.PrescriptionActivity;
 
-public class PrescriptionVM extends BaseViewModel {
+public class PrescriptionVM extends BaseViewModel implements IDiseaseTypeDialogListener {
 
+    private static String selectedOption;
+    private static int selectedFruitsIndex;
     private IPrescriptionService prescriptionService;
 
     private Prescription prescription;
@@ -56,6 +70,7 @@ public class PrescriptionVM extends BaseViewModel {
     private ITherapeuthicLineService lineService;
     private IDispenseTypeService dispenseTypeService;
     private IDrugService drugService;
+    protected IDiseaseTypeService diseaseTypeService;
 
     private PrescriptionFragment relatedListingFragment;
 
@@ -75,10 +90,25 @@ public class PrescriptionVM extends BaseViewModel {
     private Drug selectedDrug;
     private List<SimpleValue> motives;
 
+    private List<SimpleValue> prophylaxyFollowUp;
+
     private List<Listble> selectedDrugs;
 
     private IPrescribedDrugService prescribedDrugService;
 
+    private boolean showFieldsForDiseaseType;
+  //  int selectedFruitsIndex = 0;
+
+    //String selectedOption;
+
+
+    public static String getSelectedOption() {
+        return selectedOption;
+    }
+
+    public static void setSelectedOption(String selectedOption) {
+        PrescriptionVM.selectedOption = selectedOption;
+    }
 
     public PrescriptionVM(@NonNull Application application) {
         super(application);
@@ -93,11 +123,15 @@ public class PrescriptionVM extends BaseViewModel {
 
         durations = new ArrayList<>();
         motives = new ArrayList<>();
+        prophylaxyFollowUp =  new ArrayList<>();
 
         loadPrescriptionDuration();
         loadUrgenceMotives();
+        loadProphylaxyMotives();
 
         initialDataVisible = true;
+
+
     }
 
     @Override
@@ -140,6 +174,14 @@ public class PrescriptionVM extends BaseViewModel {
         motives.add(SimpleValue.fastCreate("Outro"));
     }
 
+    private void loadProphylaxyMotives(){
+        prophylaxyFollowUp.add(new SimpleValue());
+        prophylaxyFollowUp.add(SimpleValue.fastCreate("Início"));
+        prophylaxyFollowUp.add(SimpleValue.fastCreate("Continua/Manutenção"));
+        prophylaxyFollowUp.add(SimpleValue.fastCreate("Reinicio"));
+        prophylaxyFollowUp.add(SimpleValue.fastCreate("Final/Última Dispensa"));
+    }
+
     @Override
     public PrescriptionFragment getRelatedFragment() {
         return (PrescriptionFragment) super.getRelatedFragment();
@@ -150,15 +192,30 @@ public class PrescriptionVM extends BaseViewModel {
 
     }
 
+    public void selectDiseaseType() {
+        Map<Integer,String > map1 = new HashMap<>();
+        map1.put(1, "TARV");
+        map1.put(2, "TPT");
+        map1.put(3, "Prep");
+
+        if (getCurrentClinicSector() != null) {
+            Utilities.displayShowDiseaseTypeDialog(getRelatedActivity(),  map1.values().toArray(new String[map1.values().size()]), getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), PrescriptionVM.this, PrescriptionVM.this).show();
+        } else {
+            selectedOption = "TARV";
+            requestForNewRecord();
+        }
+
+    }
+
     public void requestForNewRecord(){
         try {
-
+          //  List<DiseaseType> diseaseTypes = diseaseTypeService.getAllDiseaseTypes();
             if (getRelatedFragment().getMyActivity().getPatient().hasEndEpisode()) {
                 Utilities.displayAlertDialog(getRelatedActivity(), getRelatedActivity().getString(R.string.cant_edit_patient_data)).show();
             } else {
                 getCurrentStep().changeToInit();
 
-                this.prescription = prescriptionService.getLastPatientPrescription(((PatientPanelActivity) getRelatedActivity()).getPatient());
+                this.prescription = prescriptionService.getLastPatientPrescriptionByDiseaseType(((PatientPanelActivity) getRelatedActivity()).getPatient(), getDiseaseTypeByCode(getSelectedOption()));
 
 
                 if (prescription != null) {
@@ -192,6 +249,7 @@ public class PrescriptionVM extends BaseViewModel {
         drugService = new DrugService(application, getCurrentUser());
         dispenseService = new DispenseService(application, getCurrentUser());
         prescribedDrugService = new PrescribedDrugService(application, getCurrentUser());
+        diseaseTypeService = new DiseaseTypeService(application, getCurrentUser());
     }
 
     public List<Prescription> gatAllOfPatient(Patient patient) throws SQLException {
@@ -242,6 +300,10 @@ public class PrescriptionVM extends BaseViewModel {
 
     public List<TherapeuticRegimen> getAllTherapeuticRegimen () throws SQLException {
         return regimenService.getAll();
+    }
+
+    public List<TherapeuticRegimen> getAllTherapeuticRegimenByDiseaseType (DiseaseType diseaseType) throws SQLException {
+        return regimenService.getAllTherapeuticRegimenByDiseaseType(diseaseType);
     }
 
     public List<TherapeuticLine> getAllTherapeuticLines () throws SQLException {
@@ -335,11 +397,6 @@ public class PrescriptionVM extends BaseViewModel {
 
     }
 
-    public Prescription getLastPatientPrescription(Patient patient) throws SQLException {
-
-        return  this.prescriptionService.getLastPatientPrescription(patient);
-    }
-
     public String checkPrescriptionRemoveConditions() {
         try {
             if (!this.prescription.isSyncStatusReady(this.prescription.getSyncStatus())) return getRelatedActivity().getString(R.string.prescription_cant_be_removed_msg);
@@ -360,16 +417,17 @@ public class PrescriptionVM extends BaseViewModel {
     }
 
     public void loadLastPatientPrescription() throws SQLException {
-        this.prescription = prescriptionService.getLastPatientPrescription(this.prescription.getPatient());
+        this.prescription = prescriptionService.getLastPatientPrescriptionByDiseaseType(this.prescription.getPatient(), this.prescription.getDiseaseType());
         this.prescription.setUrgentNotes(null);
         this.prescription.setUrgentPrescription(null);
         this.prescription.setPrescribedDrugs(prescribedDrugService.getAllByPrescription(this.prescription));
         this.prescription.setId(0);
     }
 
-    public boolean checkIfPatientHasPrescriptions(){
+
+    public boolean checkIfPatientHasPrescriptionsByDiseaseType(){
         try {
-            return prescriptionService.checkIfPatientHasPrescriptions(this.prescription.getPatient());
+            return prescriptionService.checkIfPatientHasPrescriptionsWithDiseaseType(this.prescription.getPatient(),this.prescription.getDiseaseType());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -420,7 +478,19 @@ public class PrescriptionVM extends BaseViewModel {
 
     @Override
     public void doOnConfirmed() {
+
         if (getCurrentStep().isApplicationStepInit()) {
+                initNewRecord();
+        }else if (getCurrentStep().isApplicationStepSave() || getCurrentStep().isApplicationStepEdit()){
+            doSave();
+        }
+    }
+
+    @Override
+    public void doOnConfirmedDiseaseType(String[] diseaseTypes,int selectedDiseaseType) {
+
+        if (getCurrentStep().isApplicationStepInit()) {
+            selectedOption = diseaseTypes[selectedDiseaseType];
             initNewRecord();
         }else if (getCurrentStep().isApplicationStepSave() || getCurrentStep().isApplicationStepEdit()){
             doSave();
@@ -432,8 +502,14 @@ public class PrescriptionVM extends BaseViewModel {
     }
 
     private void initNewRecord() {
+
         initNewPrescription();
         this.prescription.setPatient(((PatientPanelActivity) getRelatedActivity()).getPatient());
+        try {
+            this.prescription.setDiseaseType(diseaseTypeService.getDiseaseTypeByCode(selectedOption));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
         getRelatedFragment().startPrescriptionActivity();
     }
@@ -448,9 +524,8 @@ public class PrescriptionVM extends BaseViewModel {
     }
 
 
-
     public void checkIfMustBeUrgentPrescription() throws SQLException {
-        oldPrescription = prescriptionService.getLastPatientPrescription(this.prescription.getPatient());
+        oldPrescription = prescriptionService.getLastPatientPrescriptionByDiseaseType(this.prescription.getPatient(), this.prescription.getDiseaseType());
 
         oldPrescription.setDispenses(dispenseService.getAllNotVoidedDispenseByPrescription(oldPrescription));
 
@@ -537,6 +612,16 @@ public class PrescriptionVM extends BaseViewModel {
         notifyPropertyChanged(BR.prescriptionLine);
     }
 
+    @Bindable
+    public Listble getPrescriptionProphylaxyFollowUp(){
+        return Utilities.findOnArray(this.prophylaxyFollowUp, SimpleValue.fastCreate(getPrescription().getProphylaxyFollowUp() != null ? getPrescription().getProphylaxyFollowUp() : "" ));
+    }
+
+    public void setPrescriptionProphylaxyFollowUp(Listble prophylaxyFollowUp){
+        this.prescription.setProphylaxyFollowUp(prophylaxyFollowUp.getDescription());
+        notifyPropertyChanged(BR.prescriptionDispenseType);
+    }
+
     public void addSelectedDrug(){
         if (selectedDrugs == null) selectedDrugs = new ArrayList<>();
 
@@ -574,6 +659,10 @@ public class PrescriptionVM extends BaseViewModel {
         return motives;
     }
 
+    public List<SimpleValue>  getProphylaxyFollowUp() {
+        return prophylaxyFollowUp;
+    }
+
     public void setSelectedDrugs(List<Listble> drugs) {
         this.selectedDrugs = drugs;
     }
@@ -590,5 +679,14 @@ public class PrescriptionVM extends BaseViewModel {
     @Bindable
     public Date getPrescriptionDate() {
         return this.prescription.getPrescriptionDate();
+    }
+
+    public DiseaseType getDiseaseTypeByCode (String code) {
+        try {
+            return diseaseTypeService.getDiseaseTypeByCode(code.toUpperCase());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
     }
 }
