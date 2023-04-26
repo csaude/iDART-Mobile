@@ -22,6 +22,7 @@ public class TherapeuticRegimen extends BaseModel implements Listble {
 	public static final String COLUMN_REGIMEN_CODE = "regimen_code";
 	public static final String COLUMN_DESCRIPTION = "description";
 	public static final String COLUMN_REST_ID = "restid";
+	public static final String COLUMN_DISEASE_TYPE_ID = "disease_type_id";
 
 	@DatabaseField(columnName = COLUMN_ID, generatedId = true)
 	private int id;
@@ -34,6 +35,9 @@ public class TherapeuticRegimen extends BaseModel implements Listble {
 
 	@DatabaseField(columnName = COLUMN_REST_ID)
 	private int restid;
+
+	@DatabaseField(columnName = COLUMN_DISEASE_TYPE_ID, canBeNull = false, foreign = true, foreignAutoRefresh = true)
+	private DiseaseType diseaseType;
 
 	public int getId() {
 		return id;
@@ -87,6 +91,14 @@ public class TherapeuticRegimen extends BaseModel implements Listble {
 	public int getRestId() { return restid; }
 
 	public void setRestId(int restid) { this.restid = restid; }
+
+	public DiseaseType getDiseaseType() {
+		return diseaseType;
+	}
+
+	public void setDiseaseType(DiseaseType diseaseType) {
+		this.diseaseType = diseaseType;
+	}
 
 	@Override
 	public boolean equals(Object o) {

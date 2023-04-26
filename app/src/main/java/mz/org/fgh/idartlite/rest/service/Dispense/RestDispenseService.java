@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import mz.org.fgh.idartlite.base.rest.BaseRestService;
 import mz.org.fgh.idartlite.listener.rest.RestResponseListener;
 import mz.org.fgh.idartlite.model.Clinic;
 import mz.org.fgh.idartlite.model.ClinicSector;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.Dispense;
 import mz.org.fgh.idartlite.model.DispensedDrug;
 import mz.org.fgh.idartlite.model.Drug;
@@ -48,6 +50,7 @@ import mz.org.fgh.idartlite.service.dispense.DispenseService;
 import mz.org.fgh.idartlite.service.dispense.DispenseTypeService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseDrugService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseService;
+import mz.org.fgh.idartlite.service.drug.DiseaseTypeService;
 import mz.org.fgh.idartlite.service.drug.DrugService;
 import mz.org.fgh.idartlite.service.drug.IDrugService;
 import mz.org.fgh.idartlite.service.drug.TherapeuthicLineService;
@@ -79,6 +82,8 @@ public class RestDispenseService extends BaseRestService {
     private static UserService userService;
     private static ClinicSectorService clinicSectorService;
 
+    private static String url = null;
+
 
     public RestDispenseService(Application application, User currentUser) {
         super(application, currentUser);
@@ -102,10 +107,16 @@ public class RestDispenseService extends BaseRestService {
         patientService = new PatientService(getApp());
         clinicService = new ClinicService(getApp(), null);
         clinicSectorService = new ClinicSectorService(getApp(), null);
-
         Clinic clinic = clinicService.getAllClinics().get(0);
-        String url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + clinic.getUuid() + "&offset=" + offset + "&limit=" + limit;
 
+        ArrayList<ClinicSector> clinicSectorList = (ArrayList<ClinicSector>) clinicSectorService.getClinicSectorsByClinic(clinic);
+        if (clinicSectorList.isEmpty()) {
+             url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + clinic.getUuid() + "&offset=" + offset + "&limit=" + limit;
+        } else {
+             url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + clinicSectorList.get(0).getUuid() + "&offset=" + offset + "&limit=" + limit;
+        }
+
+      //  String url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + "045ee9e5-d1f6-4429-bb5d-ac05f97a8d62" + "&offset=" + offset + "&limit=" + "2246";
         try {
             getRestServiceExecutor().execute(() -> {
 
@@ -128,7 +139,7 @@ public class RestDispenseService extends BaseRestService {
 
                                         if (patient.hasEpisode() && !patient.hasEndEpisode()) {
                                             Prescription newPrescription = getPrescroptionRest(dispense, patient);
-                                            Prescription lastPrescription = prescriptionService.getLastPatientPrescription(patient);
+                                            Prescription lastPrescription = prescriptionService.getLastPatientPrescriptionByDiseaseType(patient, newPrescription.getDiseaseType());
 
                                             if (lastPrescription != null) {
                                                 if ((int) DateUtilities.dateDiff(newPrescription.getPrescriptionDate(), lastPrescription.getPrescriptionDate(), DateUtilities.DAY_FORMAT) > 0) {
@@ -141,6 +152,11 @@ public class RestDispenseService extends BaseRestService {
                                                 } else {
                                                     break;
                                                 }
+                                            } else {
+                                                if (newPrescription.getDiseaseType().getCode() != "TARV") {
+                                                    prescriptionService.createPrescription(newPrescription);
+                                                    savePrescribedDrugOnRest(dispense, newPrescription);
+                                                }
                                             }
 
                                             Dispense newDispense = getDispenseOnRest(dispense, newPrescription);
@@ -150,9 +166,9 @@ public class RestDispenseService extends BaseRestService {
                                                 if ((int) DateUtilities.dateDiff(newDispense.getPickupDate(), lastDispense.getPickupDate(), DateUtilities.DAY_FORMAT) > 0) {
                                                     dispenseService.createDispense(newDispense);
                                                     saveDispensedOnRest(dispense, newDispense);
-                                                } else {
-                                                    break;
-                                                }
+                                                } // else {
+                                                   // break;
+                                                // }
                                             } else {
                                                 dispenseService.createDispense(newDispense);
                                                 saveDispensedOnRest(dispense, newDispense);
@@ -224,7 +240,7 @@ public class RestDispenseService extends BaseRestService {
                                             Log.d(TAG, "onResponse: Dispensa " + dispense);
 
                                             Prescription newPrescription = getPrescroptionRest(dispense, patient);
-                                            Prescription lastPrescription = prescriptionService.getLastPatientPrescription(patient);
+                                            Prescription lastPrescription = prescriptionService.getLastPatientPrescriptionByDiseaseType(patient, newPrescription.getDiseaseType());
 
                                             if ((int) DateUtilities.dateDiff(newPrescription.getPrescriptionDate(), lastPrescription.getPrescriptionDate(), DateUtilities.DAY_FORMAT) > 0) {
                                                 prescriptionService.createPrescription(newPrescription);
@@ -339,6 +355,7 @@ public class RestDispenseService extends BaseRestService {
 
         LinkedTreeMap<String, Object> itemresult = (LinkedTreeMap<String, Object>) (Object) dispense;
         DispenseTypeService dispenseTypeService = new DispenseTypeService(getApp(), null);
+        DiseaseTypeService diseaseTypeService = new DiseaseTypeService(getApp(), null);
         TherapheuticRegimenService therapheuticRegimenService = new TherapheuticRegimenService(getApp(), null);
         TherapeuthicLineService therapeuthicLineService = new TherapeuthicLineService(getApp(), null);
         Prescription prescription = new Prescription();
@@ -358,7 +375,13 @@ public class RestDispenseService extends BaseRestService {
             prescription.setUrgentNotes("");
         }
         prescription.setTherapeuticRegimen(therapheuticRegimenService.getTherapeuticRegimenByDescription(itemresult.get("regimenome").toString()));
-        prescription.setTherapeuticLine(therapeuthicLineService.getTherapeuticLineByCode(itemresult.get("linhanome").toString()));
+         if (itemresult.get("linhanome") != null ) {
+             prescription.setTherapeuticLine(therapeuthicLineService.getTherapeuticLineByCode(itemresult.get("linhanome").toString()));
+         } else {
+             prescription.setProphylaxyFollowUp(itemresult.get("reasonforupdate").toString());
+         }
+
+
         prescription.setSyncStatus(BaseModel.SYNC_SATUS_SENT);
         prescription.setSupply((int) Float.parseFloat(itemresult.get("duration").toString()));
         prescription.setPrescriptionSeq(itemresult.get("prescriptionid").toString());
@@ -366,6 +389,12 @@ public class RestDispenseService extends BaseRestService {
         if (itemresult.get("expirydate") != null)
             prescription.setExpiryDate(DateUtilities.createDate(itemresult.get("expirydate").toString(), "yyyy-MM-dd"));
         prescription.setPrescriptionDate(DateUtilities.createDate(itemresult.get("date").toString(), "yyyy-MM-dd"));
+        if (itemresult.get("tipodoenca") == null) {
+            prescription.setDiseaseType(diseaseTypeService.getDiseaseTypeByCode("TARV"));
+        } else {
+            prescription.setDiseaseType(diseaseTypeService.getDiseaseTypeByCode(Objects.requireNonNull(itemresult.get("tipodoenca")).toString()));
+        }
+
 
         return prescription;
 
@@ -441,6 +470,7 @@ public class RestDispenseService extends BaseRestService {
 
         episodeService = new EpisodeService(getApp(), null);
         userService = new UserService(getApp(), null);
+        clinicService = new ClinicService(getApp(),null);
         SyncDispense syncDispense = new SyncDispense();
         ArrayList<ClinicSector> clinicSectorList = new ArrayList<>();
         int qtySupplied = 0;
@@ -459,12 +489,19 @@ public class RestDispenseService extends BaseRestService {
             syncDispense.setDate(dispense.getPrescription().getPrescriptionDate());
             syncDispense.setClinicalstage(0);
             syncDispense.setCurrent('T');
-            syncDispense.setReasonforupdate("Manter");
+             if (dispense.getPrescription().getDiseaseType().getCode() == "TARV") {
+                 syncDispense.setReasonforupdate("Manter");
+             } else {
+                 syncDispense.setReasonforupdate(dispense.getPrescription().getProphylaxyFollowUp());
+             }
+
             syncDispense.setDuration(dispense.getPrescription().getSupply());
             syncDispense.setDoctor(1);
             syncDispense.setEnddate(null);
             syncDispense.setRegimenome(dispense.getPrescription().getTherapeuticRegimen().getDescription());
-            syncDispense.setLinhanome(dispense.getPrescription().getTherapeuticLine().getDescription());
+            if (dispense.getPrescription().getTherapeuticLine() != null) {
+                syncDispense.setLinhanome(dispense.getPrescription().getTherapeuticLine().getDescription());
+            }
             syncDispense.setNotes("Mobile Pharmacy");
             syncDispense.setMotivomudanca("");
             syncDispense.setWeight(null);
@@ -495,8 +532,11 @@ public class RestDispenseService extends BaseRestService {
                 syncDispense.setDispensasemestral(0);
                 syncDispense.setTipods(null);
             }
-
-            syncDispense.setDrugtypes("ARV");
+            if (dispense.getPrescription().getDiseaseType().getCode() == "TARV") {
+                syncDispense.setDrugtypes("ARV");
+            } else {
+                syncDispense.setDrugtypes(dispense.getPrescription().getDiseaseType().getCode());
+            }
             syncDispense.setDatainicionoutroservico(null);
             syncDispense.setModified('T');
             syncDispense.setPatientid(dispense.getPrescription().getPatient().getNid());
@@ -527,6 +567,7 @@ public class RestDispenseService extends BaseRestService {
             syncDispense.setCe(Character.toUpperCase('f'));
             syncDispense.setCpn(Character.toUpperCase('f'));
             syncDispense.setClinicuuid(clinicSectorList.isEmpty()? clinic.getUuid(): clinicSectorList.get(0).getUuid());
+            syncDispense.setTipodoenca(dispense.getPrescription().getDiseaseType().getCode());
 
             List<User> users = userService.getAllUsers();
 
@@ -706,7 +747,7 @@ public class RestDispenseService extends BaseRestService {
 
                                         if (patient.hasEpisode() && !patient.hasEndEpisode()) {
                                             Prescription newPrescription = getPrescroptionRest(dispense, patient);
-                                            Prescription lastPrescription = prescriptionService.getLastPatientPrescription(patient);
+                                            Prescription lastPrescription = prescriptionService.getLastPatientPrescriptionByDiseaseType(patient, newPrescription.getDiseaseType());
 
                                             if (lastPrescription != null) {
                                                 if ((int) DateUtilities.dateDiff(newPrescription.getPrescriptionDate(), lastPrescription.getPrescriptionDate(), DateUtilities.DAY_FORMAT) > 0) {

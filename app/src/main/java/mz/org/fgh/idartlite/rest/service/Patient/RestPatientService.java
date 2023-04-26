@@ -100,7 +100,9 @@ public class RestPatientService extends BaseRestService {
                 ClinicSector clinicSector = clinicSectorList.get(0);
                 if (!clinicSector.getClinicSectorType().getDescription().contains("Provedor")) {
                     url = BaseRestService.baseUrl + "/sync_temp_patients?clinicuuid=eq." + clinicSector.getUuid() +
-                            "&exclusaopaciente=eq.false&syncstatus=eq.P&uuidopenmrs=not.in.(null,\"NA\")" +
+                            "&exclusaopaciente=eq.false";
+                    if (!isFullLoad) url += "&syncstatus=in.(\"P\",\"U\")";
+                    url += "&uuidopenmrs=not.in.(null,\"NA\")" +
                             "&offset=" + offset +
                             "&limit=" + limit;
                 }

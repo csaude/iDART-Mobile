@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import mz.org.fgh.idartlite.base.model.BaseModel;
 import mz.org.fgh.idartlite.base.service.BaseService;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.patient.Patient;
 import mz.org.fgh.idartlite.model.PrescribedDrug;
 import mz.org.fgh.idartlite.model.Prescription;
@@ -20,6 +21,7 @@ import mz.org.fgh.idartlite.model.TherapeuticLine;
 import mz.org.fgh.idartlite.model.TherapeuticRegimen;
 import mz.org.fgh.idartlite.model.User;
 import mz.org.fgh.idartlite.service.dispense.DispenseTypeService;
+import mz.org.fgh.idartlite.service.drug.DiseaseTypeService;
 import mz.org.fgh.idartlite.service.drug.TherapeuthicLineService;
 import mz.org.fgh.idartlite.service.drug.TherapheuticRegimenService;
 import mz.org.fgh.idartlite.util.DateUtilities;
@@ -34,6 +36,7 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
     protected TherapeuthicLineService therapeuticLineService;
     protected DispenseTypeService dispenseTypeService;
     protected PrescribedDrugService prescribedDrugService;
+    protected DiseaseTypeService diseaseTypeService;
 
     public PrescriptionService(Application application, User currUser) {
         super(application, currUser);
@@ -51,6 +54,7 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
         this.therapeuticLineService = new TherapeuthicLineService(getApp(), currUser);
         this.dispenseTypeService = new DispenseTypeService(getApp(), currUser);
         this.prescribedDrugService = new PrescribedDrugService(getApp(), currUser);
+        this.diseaseTypeService = new DiseaseTypeService(getApp(), currUser);
     }
 
     @Override
@@ -108,11 +112,16 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
         return getDataBaseHelper().getPrescriptionDao().getLastPatientPrescription(patient);
     }
 
+    @Override
+    public Prescription getLastPatientPrescriptionByDiseaseType(Patient patient, DiseaseType diseaseType) throws SQLException {
+        return getDataBaseHelper().getPrescriptionDao().getLastPatientPrescriptionByDiseaseType(patient,diseaseType);
+    }
+
     public void saveLastPrescriptionFromRest(LinkedTreeMap<String, Object> patient, Patient localPatient) {
 
         try {
 
-            Prescription prescription = getLastPatientPrescription(localPatient);
+            Prescription prescription = getLastPatientPrescriptionByDiseaseType(localPatient, diseaseTypeService.getDiseaseTypeByCode("TARV"));
 
             if (prescription != null) {
                 if ((int) DateUtilities.dateDiff(requireNonNull(getSqlDateFromString(requireNonNull(patient.get("prescriptiondate")).toString(), "yyyy-MM-dd'T'HH:mm:ss")), prescription.getPrescriptionDate(), DateUtilities.DAY_FORMAT) > 0)
@@ -128,6 +137,11 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
     @Override
     public boolean checkIfPatientHasPrescriptions(Patient patient) throws SQLException {
         return getDataBaseHelper().getPrescriptionDao().checkIfPatientHasPrescriptions(patient);
+    }
+
+    @Override
+    public boolean checkIfPatientHasPrescriptionsWithDiseaseType(Patient patient, DiseaseType diseaseType) throws SQLException {
+        return getDataBaseHelper().getPrescriptionDao().checkIfPatientHasPrescriptionsWithDiseaseType(patient,diseaseType);
     }
 
     @Override
@@ -150,8 +164,8 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
     }
 
     @Override
-    public List<Prescription> getAllPrescriptionToRemoveByDateAndPatient(Patient patient, Date dateToRemove) throws SQLException {
-        return getDataBaseHelper().getPrescriptionDao().getAllPrescriptionToRemoveByDateAndPatient(patient, dateToRemove);
+    public List<Prescription> getAllPrescriptionToRemoveByDateAndPatientAndDiseaseType(Patient patient,DiseaseType diseaseType, Date dateToRemove) throws SQLException {
+        return getDataBaseHelper().getPrescriptionDao().getAllPrescriptionToRemoveByDateAndPatientAndDiseaseType(patient, diseaseType, dateToRemove);
     }
 
 
@@ -180,6 +194,8 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
         else
             prescription.setDispenseType(dispenseTypeService.getDispenseTypeByDescription("Dispensa Mensal (DM)"));
 
+        prescription.setDiseaseType(diseaseTypeService.getDiseaseTypeByCode("TARV"));
+
         if (!localPatient.isFaltosoOrAbandono()) createPrescription(prescription);
 
 
@@ -187,7 +203,6 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
             prescription.setPrescribedDrugs(new ArrayList<>());
             prescribedDrugService.savePrescribedDrug(prescription, requireNonNull(patient.get("jsonprescribeddrugs")).toString(), !localPatient.isFaltosoOrAbandono());
         }
-
 
         localPatient.addPrescription(prescription);
     }

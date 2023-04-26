@@ -66,6 +66,15 @@ public class SyncDispense {
     private String uuidopenmrs;
     private String clinicuuid;
     private String username;
+    private String tipodoenca;
+
+    public String getTipodoenca() {
+        return tipodoenca;
+    }
+
+    public void setTipodoenca(String tipodoenca) {
+        this.tipodoenca = tipodoenca;
+    }
 
     public Integer getId() {
         return id;

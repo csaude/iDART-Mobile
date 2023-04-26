@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import mz.org.fgh.idartlite.base.service.BaseService;
 import mz.org.fgh.idartlite.model.DiseaseType;
@@ -113,8 +114,16 @@ public class DrugService extends BaseService<Drug> implements IDrugService {
             LinkedTreeMap<String, Object> itemresult = (LinkedTreeMap<String, Object>) (Object) drug;
 
             LinkedTreeMap<String, Object> itemSubResult = (LinkedTreeMap<String, Object>) requireNonNull(itemresult.get("form"));
+            String diseaseTypeCode = "";
+            if (Objects.requireNonNull(itemresult.get("tipodoenca")).toString().equalsIgnoreCase("TB")) {
+                diseaseTypeCode = "TPT" ;
+            } else if (Objects.requireNonNull(itemresult.get("tipodoenca")).toString().equalsIgnoreCase("ARV")) {
+                diseaseTypeCode = "TARV" ;
+            } else {
+                diseaseTypeCode =  Objects.requireNonNull(itemresult.get("tipodoenca")).toString();
+            }
 
-            DiseaseType diseaseType = diseaseTypeService.getDiseaseTypeByCode((requireNonNull(itemresult.get("tipodoenca")).toString()));
+            DiseaseType diseaseType = diseaseTypeService.getDiseaseTypeByCode((diseaseTypeCode));
             Form form = formService.getFormByDescription((requireNonNull(itemSubResult.get("form")).toString()));
 
             localDrug.setRestId((int) Float.parseFloat(requireNonNull(itemresult.get("id")).toString()));

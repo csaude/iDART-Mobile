@@ -40,8 +40,11 @@ import java.util.concurrent.ExecutionException;
 import mz.org.fgh.idartlite.R;
 import mz.org.fgh.idartlite.base.model.BaseModel;
 import mz.org.fgh.idartlite.listener.dialog.IDialogListener;
+import mz.org.fgh.idartlite.listener.dialog.IDiseaseTypeDialogListener;
 import mz.org.fgh.idartlite.listener.dialog.IListbleDialogListener;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.Prescription;
+import mz.org.fgh.idartlite.service.drug.DiseaseTypeService;
 
 public class Utilities {
 
@@ -52,6 +55,9 @@ public class Utilities {
     final static int REQUEST_CODE_ASK_PERMISSIONS = 111;
 
     public static String centralServerUrl;
+    private static String selectedOption;
+    private static int selectedDiseaseTypeIndex;
+
 
     private Utilities() {
     }
@@ -203,6 +209,39 @@ public class Utilities {
                         listener.doOnDeny();
                         dialog.dismiss();
 
+                    }
+                })
+                .create();
+
+        return myQuittingDialogBox;
+    }
+
+
+    public static AlertDialog displayShowDiseaseTypeDialog(final Context mContext, String[] diseaseTypes, String positive, String negative, IDialogListener listener, IDiseaseTypeDialogListener listenerDisease)
+    {
+        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(mContext)
+                // set message, title, and icon
+                .setTitle(mContext.getResources().getString(R.string.disease_type_pop_up_title))
+                .setSingleChoiceItems(diseaseTypes, selectedDiseaseTypeIndex, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedDiseaseTypeIndex = which;
+                        // selectedFruits = fruits[which];
+                    }
+                })
+                .setPositiveButton(positive, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        selectedOption = diseaseTypes[selectedDiseaseTypeIndex];
+                        listenerDisease.doOnConfirmedDiseaseType(diseaseTypes, selectedDiseaseTypeIndex);
+                        dialog.dismiss();
+                    }
+
+                })
+                .setNegativeButton(negative, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        listener.doOnDeny();
+                        dialog.dismiss();
                     }
                 })
                 .create();

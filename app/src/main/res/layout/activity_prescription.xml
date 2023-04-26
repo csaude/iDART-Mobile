@@ -13,6 +13,7 @@
         <variable name="regimenAdapter"         type="mz.org.fgh.idartlite.adapter.spinner.listable.ListableSpinnerAdapter"/>
         <variable name="motiveAdapter"          type="mz.org.fgh.idartlite.adapter.spinner.listable.ListableSpinnerAdapter"/>
         <variable name="durationAdapter"        type="mz.org.fgh.idartlite.adapter.spinner.listable.ListableSpinnerAdapter"/>
+        <variable name="prophylaxyFollowUpAdapter"        type="mz.org.fgh.idartlite.adapter.spinner.listable.ListableSpinnerAdapter"/>
 
         <import type="mz.org.fgh.idartlite.model.Prescription"/>
         <import type="mz.org.fgh.idartlite.util.DateUtilities"/>
@@ -152,6 +153,7 @@
                             bind:selectedOpt="@={viewModel.prescriptionRegimen}"/>
 
                         <TextView
+                            android:id="@+id/lbl_linha_terap"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/therapeutic_line"
@@ -167,6 +169,7 @@
                             />
 
                         <TextView
+                            android:id="@+id/lbl_tipo_dispensa"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/dispense_type"
@@ -179,6 +182,23 @@
                             android:layout_height="wrap_content"
                             app:adapter="@{dispenseTypeAdapter}"
                             bind:selectedOpt="@={viewModel.prescriptionDispenseType}"
+                            />
+                        <TextView
+                            android:id="@+id/lbl_prophy_follow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/prophylaxy_follow_up"
+                            style="@style/input_labels"
+                            android:visibility="gone"
+                            />
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/spn_prophy_follow"
+                            android:layout_width="fill_parent"
+                            style="@style/bottom_spinner_style"
+                            android:layout_height="wrap_content"
+                            app:adapter="@{prophylaxyFollowUpAdapter}"
+                            bind:selectedOpt="@={viewModel.prescriptionProphylaxyFollowUp}"
+                            android:visibility="gone"
                             />
                     </LinearLayout>
 
