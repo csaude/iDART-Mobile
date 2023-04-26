@@ -149,7 +149,7 @@ public class RestClinicInfoService extends BaseRestService {
                                                 }
                                             }else {
                                                 if(newClinicInformation != null)
-                                                clinicInfoService.createClinicInfo(newClinicInformation);
+                                                    clinicInfoService.createClinicInfo(newClinicInformation);
                                             }
                                         }
                                     }

@@ -172,7 +172,11 @@ public class PatientVM extends SearchVM<Patient> {
     @Override
     public void doOnlineSearch(long offset, long limit) throws SQLException {
         super.doOnlineSearch(offset, limit);
-        RestPatientService.restSearchPatientFaltosoOrAbandonoByNidOrNameOrSurname(getSearchParams().getSearchParam(), getSearchParams().getSearchParam(), getSearchParams().getSearchParam(), offset, limit, this);
+        if (getClinic().isPrivateOrComunitClinic()) {
+            RestPatientService.restGetPatientByNidOrNameOrSurname(getSearchParams().getSearchParam(), getSearchParams().getSearchParam(), getSearchParams().getSearchParam(), offset, limit,this);
+        } else {
+            RestPatientService.restSearchPatientFaltosoOrAbandonoByNidOrNameOrSurname(getSearchParams().getSearchParam(), getSearchParams().getSearchParam(), getSearchParams().getSearchParam(), offset, limit, this);
+        }
     }
 
     public List<Patient> getAllPatient() throws SQLException {

@@ -62,6 +62,7 @@
         <activity android:name=".view.reports.ReportTypeActivity" />
         <activity android:name=".view.reports.ReportsListingActivity" />
         <activity android:name=".view.reports.DispenseReportActivity" />
+        <activity android:name=".view.reports.DispenseReportUsActivity" />
         <activity android:name=".view.reports.DispensedDrugsReportActivity" />
         <activity android:name=".view.reports.StockAlertReportActivity" />
         <activity android:name=".view.stock.inventory.IventoryActivity" />

@@ -15,6 +15,7 @@ import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.Drug;
 import mz.org.fgh.idartlite.model.Form;
 import mz.org.fgh.idartlite.model.Stock;
+import mz.org.fgh.idartlite.model.StockAjustment;
 import mz.org.fgh.idartlite.model.TherapeuticRegimen;
 import mz.org.fgh.idartlite.model.User;
 import mz.org.fgh.idartlite.model.inventory.Iventory;
@@ -179,14 +180,17 @@ public class DrugService extends BaseService<Drug> implements IDrugService {
             int stockActual = 0;
             List<Stock> listaStock = getDataBaseHelper().getStockDao().getStockListByDates(drug, startDate, endDate);
             for (Stock stock : listaStock) {
+                List<StockAjustment> stockAdjustments = getDataBaseHelper().getStockAjustmentDao().getAllOfStock(stock);
+                long stockQuantity = !stockAdjustments.isEmpty()? stockAdjustments.get(0).getStockCount() : stock.getStockMoviment();
+
                 StockReportModel stockRm = new StockReportModel();
                 stockRm.setEntranceQtd(String.valueOf(stock.getUnitsReceived()));
-                stockRm.setExistingStock(String.valueOf(stock.getStockMoviment()));
+                stockRm.setExistingStock(String.valueOf(stockQuantity));
                 stockRm.setBatchNumber(stock.getBatchNumber());
                 stockRm.setExpiryDate(DateUtilities.formatToDDMMYYYY(stock.getValidate()));
                 Long dispensedQtd = dispenseDrugService.getDispensedDrugsByStockAndStock(drug, stock);
                 stockRm.setDispenseQtd(String.valueOf(dispensedQtd));
-                stockActual += stock.getStockMoviment();
+                stockActual += stockQuantity;
                 stockReportList.add(stockRm);
             }
             drugRM.setBalance(String.valueOf(stockActual));
