@@ -101,6 +101,7 @@ public class PatientDaoImpl extends GenericDaoImpl<Patient, Integer> implements 
         QueryBuilder<Patient, Integer> patientQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPatientDao().queryBuilder();
         patientQb.where().in(Patient.COLUMN_ID,episodeQb);
 //        patientQb.join(episodeQb);
+        System.out.println("patientQb.prepareStatementString()");
         System.out.println(patientQb.prepareStatementString());
 
         return patientQb.query();

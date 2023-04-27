@@ -69,8 +69,9 @@ public class DispensedDrugsReportVM extends BaseViewModel implements RestRespons
     }
 
     private void doOnlineSearch(Date start, Date end) {
+        boolean isUsDispenses = false;
         try {
-            RestDispenseService.restGetAllDispenseByPeriod(start, end, getCurrentClinic().getUuid() ,0,0, this);
+            RestDispenseService.restGetAllDispenseByPeriod(start, end, getCurrentClinic().getUuid() ,0,0, this, isUsDispenses);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

@@ -117,7 +117,8 @@ public class DispenseByDispenseTypeStatisticReportVM extends SearchVM<Dispense> 
     @Override
     public void doOnlineSearch(long offset, long limit) throws SQLException {
         super.doOnlineSearch(offset, limit);
-        RestDispenseService.restGetAllDispenseByPeriod(DateUtilities.createDate(startDate, DateUtilities.DATE_FORMAT), DateUtilities.createDateWithTime(endDate,DateUtilities.END_DAY_TIME, DateUtilities.DATE_TIME_FORMAT), getCurrentClinic().getUuid() ,offset,limit, this);
+        boolean isUsDispenses = false;
+        RestDispenseService.restGetAllDispenseByPeriod(DateUtilities.createDate(startDate, DateUtilities.DATE_FORMAT), DateUtilities.createDateWithTime(endDate,DateUtilities.END_DAY_TIME, DateUtilities.DATE_TIME_FORMAT), getCurrentClinic().getUuid() ,offset,limit, this, isUsDispenses);
 
     }
 

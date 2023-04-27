@@ -62,8 +62,22 @@ public class StockDaoImpl extends GenericDaoImpl<Stock, Integer> implements ISto
 
     @Override
     public List<Stock> getAllStocksByDrug(Drug drug) throws SQLException {
+        for(Stock stock : queryBuilder()
+                .where()
+                .eq(Stock.COLUMN_DRUG, drug.getId())
+                .and()
+                .eq(Drug.COLUMN_DISEASE_TYPE, "TARV")
+                .query()){
+            System.out.println(stock);
+        }
         return queryBuilder().where().eq(Stock.COLUMN_DRUG, drug.getId()).query();
     }
+//    public List<Stock> getAllStocksByDrug(Drug drug) throws SQLException {
+//        for(Stock stock : queryBuilder().where().eq(Stock.COLUMN_DRUG, drug.getId()).query()){
+//            System.out.println(stock);
+//        }
+//        return queryBuilder().where().eq(Stock.COLUMN_DRUG, drug.getId()).query();
+//    }
 
     @Override
     public List<Stock> getAll(Drug drug) throws SQLException {

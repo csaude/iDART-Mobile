@@ -646,25 +646,44 @@ public class RestDispenseService extends BaseRestService {
         }
     }
 
-    public static void restGetAllDispenseByPeriod(Date startDate, Date endDate, String clinicUUID, long offset, long limit, RestResponseListener listener) throws SQLException {
+    public static void restGetAllDispenseByPeriod(Date startDate, Date endDate, String clinicUUID, long offset, long limit, RestResponseListener listener, boolean isUsDispense) throws SQLException {
         String url;
 
         if (limit > 0) {
-            url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
-                    "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
-                    "&clinicuuid=eq." + clinicUUID +
-                    "&qtyinhand=neq.(30)" +
-                    "&qtyinhand=neq.(90)" +
-                    "&offset=" + offset +
-                    "&limit=" + limit +
-                    "&order=pickupdate.desc";
+            if(isUsDispense){
+                url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
+                        "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
+                        "&clinicuuid=eq." + clinicUUID +
+                        "&prescriptionid=like._____%" +
+                        "&offset=" + offset +
+                        "&limit=" + limit +
+                        "&order=pickupdate.desc";
+            } else {
+                url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
+                        "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
+                        "&clinicuuid=eq." + clinicUUID +
+                        "&qtyinhand=neq.(30)" +
+                        "&qtyinhand=neq.(90)" +
+                        "&offset=" + offset +
+                        "&limit=" + limit +
+                        "&order=pickupdate.desc";
+            }
         } else {
-            url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
-                    "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
-                    "&clinicuuid=eq." + clinicUUID +
-                    "&qtyinhand=neq.(30)" +
-                    "&qtyinhand=neq.(90)" +
-                    "&order=pickupdate.desc";
+            if(isUsDispense){
+                url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
+                        "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
+                        "&clinicuuid=eq." + clinicUUID +
+                        "&prescriptionid=like._____%" +
+                        "&order=pickupdate.desc";
+            }else{
+                url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
+                        "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
+                        "&clinicuuid=eq." + clinicUUID +
+                        "&qtyinhand=neq.(30)" +
+                        "&qtyinhand=neq.(90)" +
+                        "&order=pickupdate.desc";
+            }
+
         }
 
 
@@ -684,7 +703,8 @@ public class RestDispenseService extends BaseRestService {
                                 List<Dispense> dispenseList = new ArrayList<>();
                                 if (dispenses.length > 0) {
                                     for (Object dispense : dispenses) {
-                                        Log.d(TAG, "onResponse: Dispensa " + dispense);
+//                                        Log.d(TAG, "onResponse: Dispensa " + dispense);
+                                        System.out.println("dispense: "+dispense);
                                         Patient patient = getPatient(dispense);
                                         Prescription newPrescription = getPrescroptionRest(dispense, patient);
                                         Dispense d = getDispenseOnRest(dispense, newPrescription);
@@ -868,7 +888,13 @@ public class RestDispenseService extends BaseRestService {
         LinkedTreeMap<String, Object> itemresult = (LinkedTreeMap<String, Object>) (Object) dispense;
         PatientService patientService = new PatientService(getApp(), null);
         episodeService = new EpisodeService(getApp(), null);
-        Patient patient = patientService.getPatientByUuid(itemresult.get("uuidopenmrs").toString());
+        Patient patient = new Patient();
+        if(itemresult.get("uuidopenmrs").toString().equalsIgnoreCase("3c3a032f-58ef-4632-92f7-4047f15773dc") || itemresult.get("uuidopenmrs").toString().equalsIgnoreCase("e605e933-6066-40ba-b841-d7e64fe7eaad") || itemresult.get("uuidopenmrs").toString().equalsIgnoreCase("13ffd84e-c69e-4881-a30a-32e957f83292")){
+            patient = patientService.getPatientByUuid("486044ee-b4df-4b99-8514-e49349d41dba");
+        } else {
+            patient = patientService.getPatientByUuid(itemresult.get("uuidopenmrs").toString());
+        }
+        System.out.println(patient);
         List<Episode> episodeList = episodeService.getAllEpisodesByPatient(patient);
         patient.getEpisodes1().add(episodeList.get(0));
         return patient;

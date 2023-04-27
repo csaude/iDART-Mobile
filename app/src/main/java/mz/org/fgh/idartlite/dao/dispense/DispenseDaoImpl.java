@@ -99,23 +99,75 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
     }
 
     @Override
-    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate, long offset, long limit) throws SQLException {
-        // Tamanho de prescriptionID.tamanho > 10 [US-001]
+    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application, Date startDate, Date endDate, long offset, long limit) throws SQLException {
         QueryBuilder<Dispense, Integer> qb = queryBuilder();
-        QueryBuilder<DispensedDrug, Integer> dispensedDrugQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispensedDrugDao().queryBuilder();
-        dispensedDrugQb.where().gt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED,0).and().lt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED,12);
+        QueryBuilder<Prescription, Integer> prescriptionQb = IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPrescriptionDao().queryBuilder();
+        String rawWhere = "LENGTH(" + Prescription.COLUMN_PRESCRIPTION_SEQ + ") >= 4";
+        prescriptionQb.where().raw(rawWhere);
+
+        String rawWhere1 = "julianday(" + Dispense.COLUMN_PICKUP_DATE + ") - julianday(" + Prescription.COLUMN_PRESCRIPTION_DATE + ") < 3";
+        qb.join(prescriptionQb);
+        QueryBuilder<DispensedDrug, Integer> dispensedDrugQb = IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispensedDrugDao().queryBuilder();
+        dispensedDrugQb.where().gt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED, 0).and().lt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED, 12);
 
         qb.join(dispensedDrugQb);
+
         if (limit > 0 && offset > 0) qb.limit(limit).offset(offset);
         qb.where().ge(Dispense.COLUMN_PICKUP_DATE, startDate)
                 .and()
-                .le(Dispense.COLUMN_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false);
-        List<Dispense> resList = new ArrayList<>();
-        for (Dispense dispense : qb.query()) {
-            if (dispense.getPrescription().getPrescriptionSeq().length() > 7) resList.add(dispense);
-        }
-        return resList;
+                .le(Dispense.COLUMN_PICKUP_DATE, endDate)
+                .and()
+                .eq(Dispense.COLUMN_VOIDED, false)
+                .and()
+                .raw(rawWhere1);
+        System.out.println(qb.prepareStatementString());
+        return qb.query();
     }
+
+
+
+
+
+//    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application, Date startDate, Date endDate, long offset, long limit) throws SQLException {
+//        QueryBuilder<Dispense, Integer> qb = queryBuilder();
+//        QueryBuilder<Prescription, Integer> prescriptionQb = IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPrescriptionDao().queryBuilder();
+//        String rawWhere = "LENGTH(" + Prescription.COLUMN_PRESCRIPTION_SEQ + ") > 4";
+//        prescriptionQb.where().raw(rawWhere);
+//
+//        qb.join(prescriptionQb);
+//        QueryBuilder<DispensedDrug, Integer> dispensedDrugQb = IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispensedDrugDao().queryBuilder();
+//        dispensedDrugQb.where().gt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED, 0).and().lt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED, 12);
+//
+//        qb.join(dispensedDrugQb);
+//        if (limit > 0 && offset > 0) qb.limit(limit).offset(offset);
+//        qb.where().ge(Dispense.COLUMN_PICKUP_DATE, startDate)
+//                .and()
+//                .le(Dispense.COLUMN_PICKUP_DATE, endDate)
+//                .and()
+//                .eq(Dispense.COLUMN_VOIDED, false);
+//
+//        System.out.println(qb.prepareStatementString());
+//        return qb.query();
+//    }
+
+
+//    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate, long offset, long limit) throws SQLException {
+//        // Tamanho de prescriptionID.tamanho > 10 [US-001]
+//        QueryBuilder<Dispense, Integer> qb = queryBuilder();
+//        QueryBuilder<DispensedDrug, Integer> dispensedDrugQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispensedDrugDao().queryBuilder();
+//        dispensedDrugQb.where().gt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED,0).and().lt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED,12);
+//
+//        qb.join(dispensedDrugQb);
+//        if (limit > 0 && offset > 0) qb.limit(limit).offset(offset);
+//        qb.where().ge(Dispense.COLUMN_PICKUP_DATE, startDate)
+//                .and()
+//                .le(Dispense.COLUMN_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false);
+//        List<Dispense> resList = new ArrayList<>();
+//        for (Dispense dispense : qb.query()) {
+//            if (dispense.getPrescription().getPrescriptionSeq().length() > 7) resList.add(dispense);
+//        }
+//        return resList;
+//    }
 
     @Override
     public List<Dispense> getDispensesNonSyncBetweenStartDateAndEndDateWithLimit(Date startDate, Date endDate, long offset, long limit) throws SQLException {
