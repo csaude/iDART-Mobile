@@ -71,7 +71,12 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
 
         List<Dispense> dispenses = dispenseQb.orderBy(Dispense.COLUMN_NEXT_PICKUP_DATE, false).query();
 
-        return dispenses;
+        List<Dispense> resList = new ArrayList<>();
+        for (Dispense dispense : dispenses) {
+            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+                resList.add(dispense);
+        }
+        return resList;
     }
 
     @Override
@@ -194,9 +199,15 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
     public List<Dispense> getDispensesNonSyncBetweenStartDateAndEndDateWithLimit(Date startDate, Date endDate, long offset, long limit) throws SQLException {
         QueryBuilder<Dispense, Integer> qb = queryBuilder();
         if (limit > 0 && offset > 0)  qb.limit(limit).offset(offset);
-        return qb.where().ge(Dispense.COLUMN_PICKUP_DATE, startDate)
+         qb.where().ge(Dispense.COLUMN_PICKUP_DATE, startDate)
                 .and()
-                .le(Dispense.COLUMN_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false).and().eq(Dispense.COLUMN_SYNC_STATUS, Dispense.SYNC_SATUS_READY).query();
+                .le(Dispense.COLUMN_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false).and().eq(Dispense.COLUMN_SYNC_STATUS, Dispense.SYNC_SATUS_READY);
+        List<Dispense> resList = new ArrayList<>();
+        for(Dispense dispense : qb.query()) {
+            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+                resList.add(dispense);
+        }
+        return resList;
     }
 
     @Override
@@ -241,7 +252,12 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
         dispenseQb.where().ge(Dispense.COLUMN_NEXT_PICKUP_DATE, startDate)
                 .and()
                 .le(Dispense.COLUMN_NEXT_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false);
-        return dispenseQb.query();
+        List<Dispense> resList = new ArrayList<>();
+        for(Dispense dispense : dispenseQb.query()) {
+            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+            resList.add(dispense);
+        }
+        return resList;
     }
 
     public List<Dispense> getAbsentPatientsBetweenNextPickppDateStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate, long offset, long limit) throws SQLException {
@@ -275,8 +291,12 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
         outerDispenseQb.where().ge(Dispense.COLUMN_NEXT_PICKUP_DATE, startDate)
                 .and()
                 .le(Dispense.COLUMN_NEXT_PICKUP_DATE, endDate).and().in(Dispense.COLUMN_NEXT_PICKUP_DATE,dispenseQb1.selectRaw("max(next_pickup_date)")).and().eq(Dispense.COLUMN_VOIDED,false).and().not().exists(dispenseQb2);
-
-        return outerDispenseQb.query();
+        List<Dispense> resList = new ArrayList<>();
+        for (Dispense dispense : outerDispenseQb.query()) {
+            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+                resList.add(dispense);
+        }
+        return resList;
     }
 
     public List<Dispense> getActivePatientsBetweenNextPickppDateStartDateAndEndDateWithLimit(Application application,Date startDate, Date endDate, long offset, long limit) throws SQLException {
@@ -295,7 +315,13 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
 
         if (limit > 0 && offset > 0) dispenseQb.limit(limit).offset(offset);
         dispenseQb.where().raw("Date(dispenses.next_pickup_date, \'+3 days\') >= '"+DateUtilities.formatToYYYYMMDD(endDate)+"'");
-        return dispenseQb.query();
+
+        List<Dispense> resList = new ArrayList<>();
+        for (Dispense dispense : dispenseQb.query()) {
+            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+                resList.add(dispense);
+        }
+        return resList;
     }
 
 

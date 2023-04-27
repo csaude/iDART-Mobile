@@ -619,6 +619,7 @@ public class RestDispenseService extends BaseRestService {
                                             Prescription newPrescription = getPrescroptionRest(dispense, patient);
                                             Dispense d = getDispenseOnRest(dispense, newPrescription);
                                             loadDispensedDrugFromRest(dispense, d);
+                                            if(d.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
                                             dispenseList.add(d);
                                         }
                                         listener.doOnResponse(BaseRestService.REQUEST_SUCESS, dispenseList);
@@ -704,11 +705,11 @@ public class RestDispenseService extends BaseRestService {
                                 if (dispenses.length > 0) {
                                     for (Object dispense : dispenses) {
 //                                        Log.d(TAG, "onResponse: Dispensa " + dispense);
-                                        System.out.println("dispense: "+dispense);
                                         Patient patient = getPatient(dispense);
                                         Prescription newPrescription = getPrescroptionRest(dispense, patient);
                                         Dispense d = getDispenseOnRest(dispense, newPrescription);
                                         loadDispensedDrugFromRest(dispense, d);
+                                        if(d.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
                                         dispenseList.add(d);
                                     }
                                     listener.doOnResponse(BaseRestService.REQUEST_SUCESS, dispenseList);

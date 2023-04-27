@@ -180,7 +180,6 @@ public class ReportTypeActivity extends BaseActivity {
         reports.add(Report.fastCreate("018", "Relatorio Estatistico de Dispensas por Tipo de Dispensa e Regime", R.drawable.ic_list, DispenseByDispenseTypeReportActivity.class));
         reports.add(Report.fastCreate("019", "Relatorio de pacientes activos na farmacia", R.drawable.ic_list, ActivePatientsReportActivity.class));
         reports.add(Report.fastCreate("020", "Relatorio de Lista Stock", R.drawable.ic_list, StockListReportActivity.class));
-        // reports.add(Report.fastCreate("021", "Relatorio de Pacientes que levantaram na US", R.drawable.ic_list, GotUpAtUsReportActivity.class));        
         reports.add(Report.fastCreate("021", "Relatorio de Pacientes que levantaram na US", R.drawable.ic_list, DispenseReportUsActivity.class));
 
         return reports;
