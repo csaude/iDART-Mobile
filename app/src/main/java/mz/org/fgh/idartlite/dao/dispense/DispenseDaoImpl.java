@@ -102,7 +102,14 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
          qb.where().ge(Dispense.COLUMN_PICKUP_DATE, startDate)
                 .and()
                 .le(Dispense.COLUMN_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false);
-        return qb.query();
+
+
+        List<Dispense> resList = new ArrayList<>();
+        for (Dispense dispense : qb.query()) {
+            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+                resList.add(dispense);
+        }
+        return resList;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
