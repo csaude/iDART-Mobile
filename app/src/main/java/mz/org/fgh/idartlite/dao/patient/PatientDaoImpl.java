@@ -9,6 +9,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTableConfig;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -101,8 +102,7 @@ public class PatientDaoImpl extends GenericDaoImpl<Patient, Integer> implements 
         QueryBuilder<Patient, Integer> patientQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getPatientDao().queryBuilder();
         patientQb.where().in(Patient.COLUMN_ID,episodeQb);
 //        patientQb.join(episodeQb);
-        System.out.println("patientQb.prepareStatementString()");
-        System.out.println(patientQb.prepareStatementString());
+//        System.out.println(patientQb.prepareStatementString());
 
         return patientQb.query();
 

@@ -69,12 +69,10 @@ public class PatientService extends BaseService<Patient> implements IPatientServ
     }
 
     public List<Patient> searchPatientByParamAndClinic(String param, Clinic clinic, long offset, long limit) throws SQLException {
-        System.out.println("UM");
         return patientDao.searchPatientByParamAndClinic(param, clinic, offset, limit);
     }
 
     public List<Patient> getALLPatient() throws SQLException {
-        System.out.println("DOIS");
         return patientDao.queryForAll();
     }
 
