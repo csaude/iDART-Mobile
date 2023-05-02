@@ -36,7 +36,9 @@ import mz.org.fgh.idartlite.base.model.BaseModel;
 import mz.org.fgh.idartlite.base.viewModel.BaseViewModel;
 import mz.org.fgh.idartlite.databinding.ActivityCreateDispenseBinding;
 import mz.org.fgh.idartlite.listener.dialog.IDialogListener;
+import mz.org.fgh.idartlite.model.DiseaseType;
 import mz.org.fgh.idartlite.model.Dispense;
+import mz.org.fgh.idartlite.model.DispenseType;
 import mz.org.fgh.idartlite.model.DispensedDrug;
 import mz.org.fgh.idartlite.model.Drug;
 import mz.org.fgh.idartlite.model.patient.Patient;
@@ -102,7 +104,12 @@ public class CreateDispenseActivity extends BaseActivity implements IDialogListe
                     this.setPatient((Patient) bundle.getSerializable("patient"));
 
                     try {
-                        this.prescription = getRelatedViewModel().getLastPatientPrescriptionByDiseaseType(this.getPatient(),this.prescription.getDiseaseType());
+                        if(this.prescription != null){
+                            this.prescription = getRelatedViewModel().getLastPatientPrescriptionByDiseaseType(this.getPatient(),this.prescription.getDiseaseType());
+                        }else{
+                            DiseaseType diseaseType = getRelatedViewModel().defaultDiseaseType();
+                            this.prescription = getRelatedViewModel().getLastPatientPrescriptionByDiseaseType(this.getPatient(), diseaseType);
+                        }
 
                         dispenseList = (List<Dispense>) bundle.getSerializable("dispenses");
 

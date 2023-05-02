@@ -35,7 +35,9 @@ import mz.org.fgh.idartlite.service.dispense.DispenseDrugService;
 import mz.org.fgh.idartlite.service.dispense.DispenseService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseDrugService;
 import mz.org.fgh.idartlite.service.dispense.IDispenseService;
+import mz.org.fgh.idartlite.service.drug.DiseaseTypeService;
 import mz.org.fgh.idartlite.service.drug.DrugService;
+import mz.org.fgh.idartlite.service.drug.IDiseaseTypeService;
 import mz.org.fgh.idartlite.service.drug.IDrugService;
 import mz.org.fgh.idartlite.service.episode.EpisodeService;
 import mz.org.fgh.idartlite.service.episode.IEpisodeService;
@@ -56,6 +58,8 @@ import mz.org.fgh.idartlite.view.patientPanel.PatientPanelActivity;
 public class DispenseVM extends BaseViewModel {
 
     private IDispenseService dispenseService;
+
+    private IDiseaseTypeService diseaseService;
 
     private Dispense dispense;
 
@@ -85,6 +89,7 @@ public class DispenseVM extends BaseViewModel {
         dispenseService = new DispenseService(application, getCurrentUser());
         prescriptionService = new PrescriptionService(application, getCurrentUser());
         dispenseDrugService = new DispenseDrugService(application, getCurrentUser());
+        diseaseService = new DiseaseTypeService(application, getCurrentUser());
         this.drugService = new DrugService(application, getCurrentUser());
         this.stockService = new StockService(application, getCurrentUser());
         this.episodeService = new EpisodeService(application, getCurrentUser());
@@ -166,6 +171,10 @@ public class DispenseVM extends BaseViewModel {
 
     public List<Drug> getAllDrugsFromPrescritionRegimen() throws SQLException {
         return drugService.getAllByTherapeuticRegimen((TherapeuticRegimen) this.dispense.getPrescription().getTherapeuticRegimen());
+    }
+
+    public DiseaseType defaultDiseaseType() throws SQLException {
+        return diseaseService.getDiseaseTypeByCode("TARV");
     }
 
     public List<Drug> getDrugsWithoutRectParanthesis(List<Drug> drugs) throws SQLException {
