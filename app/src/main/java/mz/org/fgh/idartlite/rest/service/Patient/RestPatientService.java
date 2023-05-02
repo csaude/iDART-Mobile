@@ -237,6 +237,7 @@ public class RestPatientService extends BaseRestService {
 
         patientService = new PatientService(getApp(), null);
         provinceService = new ProvinceService(getApp(), null);
+        prescriptionService = new PrescriptionService(getApp(), null);
 
         List<Patient> newPatients = new ArrayList<>();
         Clinic clinic = null;
@@ -292,18 +293,21 @@ public class RestPatientService extends BaseRestService {
                                     localPatient.setStartARVDate(getSqlDateFromString(Objects.requireNonNull(patientRest.get("datainiciotarv")).toString(), "dd MMM yyyy"));
                                 }
 
-                                try {
-                                    if (!patientService.checkPatient(patientRest)) {
-                                        patientObj = patientService.saveOnPatient(patientRest);
-                                        newPatients.add(new Patient(patientRest.get("uuidopenmrs").toString()));
-                                    } else {
-                                        patientObj = patientService.updateOnPatientViaRest(patientRest);
-                                        Log.i(TAG, "onResponse: " + patient + " Ja Existe");
-                                    }
-                                    RestClinicInfoService.getRestLastClinicInfo(patientObj);
-                                    restPatchSyncStatus(patientObj, BaseModel.SYNC_SATUS_SENT);
-                                } catch (Exception e) {
-                                }
+                                        localPatient.setAttributes(new ArrayList<>());
+                                        localPatient.getAttributes().add(PatientAttribute.fastCreateFaltoso(localPatient));
+
+                                        Episode episode = new Episode();
+                                        episode.setEpisodeDate(getSqlDateFromString(Objects.requireNonNull(patientRest.get("prescriptiondate")).toString(), "yyyy-MM-dd'T'HH:mm:ss"));
+                                        episode.setPatient(localPatient);
+                                        episode.setSanitaryUnit(Objects.requireNonNull(patientRest.get("mainclinicname")).toString());
+                                        episode.setUsUuid(Objects.requireNonNull(patientRest.get("mainclinicuuid")).toString());
+                                        episode.setStartReason(PatientAttribute.PATIENT_DISPENSATION_STATUS_FALTOSO);
+                                        episode.setNotes(PatientAttribute.PATIENT_DISPENSATION_STATUS_FALTOSO);
+                                        episode.setSyncStatus(BaseModel.SYNC_SATUS_SENT);
+                                        episode.setUuid(UUID.randomUUID().toString());
+                                        localPatient.setEpisodes(new ArrayList<>());
+                                        localPatient.getEpisodes().add(episode);
+                                    prescriptionService.saveLastPrescriptionFromRest(patientRest, localPatient);
                                 localPatient.addAttribute(PatientAttribute.fastCreateByCode(Objects.requireNonNull(patientRest.get("estadopaciente")).toString(), localPatient));
                                 newPatients.add(localPatient);
                             }

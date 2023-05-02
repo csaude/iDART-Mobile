@@ -60,7 +60,11 @@ public class ContentListPatientAdapter extends AbstractRecycleViewAdapter<Patien
             ((PatientViewHolder) viewHolder).contentPatientBinding.downloadPatient.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((PatientVM) getActivity().getRelatedViewModel()).downloadSelected(records.get(position));
+                    if (patient.getClinic().isPrivateOrComunitClinic()) {
+                        ((PatientVM) getActivity().getRelatedViewModel()).downloadSelectedNormal(records.get(position));
+                    } else {
+                        ((PatientVM) getActivity().getRelatedViewModel()).downloadSelected(records.get(position));
+                    }
                 }
             });
 
