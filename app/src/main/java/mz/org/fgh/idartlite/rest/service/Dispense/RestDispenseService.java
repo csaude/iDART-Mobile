@@ -651,10 +651,9 @@ public class RestDispenseService extends BaseRestService {
 
         if (limit > 0) {
             if(isUsDispense){
-                url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
+                url = BaseRestService.baseUrl + "/sync_temp_us_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
                         "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
                         "&clinicuuid=eq." + clinicUUID +
-                        "&prescriptionid=like._____%" +
                         "&offset=" + offset +
                         "&limit=" + limit +
                         "&order=pickupdate.desc";
@@ -670,10 +669,9 @@ public class RestDispenseService extends BaseRestService {
             }
         } else {
             if(isUsDispense){
-                url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
+                url = BaseRestService.baseUrl + "/sync_temp_us_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
                         "&pickupdate=lte." + DateUtilities.formatToYYYYMMDD(endDate) +
                         "&clinicuuid=eq." + clinicUUID +
-                        "&prescriptionid=like._____%" +
                         "&order=pickupdate.desc";
             }else{
                 url = BaseRestService.baseUrl + "/sync_temp_dispense_vw?pickupdate=gte." + DateUtilities.formatToYYYYMMDD(startDate) +
@@ -706,10 +704,14 @@ public class RestDispenseService extends BaseRestService {
 //                                        Log.d(TAG, "onResponse: Dispensa " + dispense);
                                         System.out.println("dispense: "+dispense);
                                         Patient patient = getPatient(dispense);
-                                        Prescription newPrescription = getPrescroptionRest(dispense, patient);
-                                        Dispense d = getDispenseOnRest(dispense, newPrescription);
-                                        loadDispensedDrugFromRest(dispense, d);
-                                        dispenseList.add(d);
+                                        if (patient != null) {
+                                            Prescription newPrescription = getPrescroptionRest(dispense, patient);
+                                            Dispense d = getDispenseOnRest(dispense, newPrescription);
+                                            loadDispensedDrugFromRest(dispense, d);
+                                            dispenseList.add(d);
+                                        }else{
+                                            Log.d(TAG, "onErrorResponse: Erro no GET : Paciente nao existe!");
+                                        }
                                     }
                                     listener.doOnResponse(BaseRestService.REQUEST_SUCESS, dispenseList);
                                 } else listener.doOnResponse(REQUEST_NO_DATA, null);
@@ -894,10 +896,14 @@ public class RestDispenseService extends BaseRestService {
         } else {
             patient = patientService.getPatientByUuid(itemresult.get("uuidopenmrs").toString());
         }
-        System.out.println(patient);
-        List<Episode> episodeList = episodeService.getAllEpisodesByPatient(patient);
-        patient.getEpisodes1().add(episodeList.get(0));
-        return patient;
+
+        if(patient != null){
+            List<Episode> episodeList = episodeService.getAllEpisodesByPatient(patient);
+            patient.getEpisodes1().add(episodeList.get(0));
+            return patient;
+        } else
+            return null;
+
     }
 
 }
