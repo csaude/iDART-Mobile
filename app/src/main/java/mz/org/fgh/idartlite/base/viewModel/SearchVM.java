@@ -286,6 +286,7 @@ public abstract class SearchVM<T extends BaseModel> extends BaseViewModel implem
         } else {
             int end;
             if (Utilities.listHasElements(newRecs)) {
+                getAllDisplyedRecords().addAll((Collection<? extends T>) doBeforeDisplay(getSearchResults()));
                 if ((allDisplyedRecords.size() + pageSize) > this.searchResults.size()) {
                     end = this.searchResults.size() - 1;
                 } else {
@@ -295,12 +296,10 @@ public abstract class SearchVM<T extends BaseModel> extends BaseViewModel implem
                 end = this.searchResults.size() - 1;
             }
             getAllDisplyedRecords().remove(getAllDisplyedRecords().size() - 1);
-            adapter.notifyItemRemoved(getAllDisplyedRecords().size());
+            displaySearchResults();
 
             loadNewRecords(end);
 
-            adapter.notifyDataSetChanged();
-            adapter.setLoaded();
         }
     }
 

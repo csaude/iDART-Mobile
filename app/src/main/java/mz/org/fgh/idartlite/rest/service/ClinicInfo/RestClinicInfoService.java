@@ -44,6 +44,7 @@ import mz.org.fgh.idartlite.service.episode.EpisodeService;
 import mz.org.fgh.idartlite.service.episode.IEpisodeService;
 import mz.org.fgh.idartlite.service.prescription.PrescriptionService;
 import mz.org.fgh.idartlite.util.DateUtilities;
+import mz.org.fgh.idartlite.util.Utilities;
 
 public class RestClinicInfoService extends BaseRestService {
 
@@ -115,7 +116,9 @@ public class RestClinicInfoService extends BaseRestService {
 
         episodeList = realEpisodeService.getAllEpisodesByPatient(patient);
 
+        if (Utilities.listHasElements(episodeList)) {
         Episode episode = episodeList.get(episodeList.size() - 1);
+
 
         if (episode != null) {
 
@@ -170,6 +173,7 @@ public class RestClinicInfoService extends BaseRestService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
         }
     }
 

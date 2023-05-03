@@ -216,7 +216,6 @@ public class Clinic extends BaseModel implements Listble {
 	}
 
 	public boolean isPrivateOrComunitClinic() {
-		System.out.println(getPharmacyType().getDescription());
 		return getPharmacyType().getDescription().contains("Privada") || getPharmacyType().getDescription().contains("Comunit");
 	}
 

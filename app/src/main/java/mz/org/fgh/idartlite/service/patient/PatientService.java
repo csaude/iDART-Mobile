@@ -201,7 +201,7 @@ public class PatientService extends BaseService<Patient> implements IPatientServ
     }
 
     @Override
-    public void saveFaltoso(Patient patient) throws SQLException {
+    public void savePatientAndDetails(Patient patient) throws SQLException {
         save(patient);
         if (Utilities.listHasElements(patient.getEpisodes())) {
             for (Episode episode : patient.getEpisodes()) {

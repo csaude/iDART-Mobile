@@ -44,5 +44,6 @@ public interface IPatientService extends IBaseService<Patient> {
 
     void changePatienToFaltosoOrAbandono(Patient patient) throws SQLException;
 
-    void saveFaltoso(Patient patient) throws SQLException;
+    void savePatientAndDetails(Patient patient) throws SQLException;
+
 }

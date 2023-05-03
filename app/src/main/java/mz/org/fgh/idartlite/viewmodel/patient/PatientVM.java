@@ -26,6 +26,7 @@ import mz.org.fgh.idartlite.base.viewModel.SearchVM;
 import mz.org.fgh.idartlite.model.Clinic;
 import mz.org.fgh.idartlite.model.patient.Patient;
 import mz.org.fgh.idartlite.rest.helper.RESTServiceHandler;
+import mz.org.fgh.idartlite.rest.service.ClinicInfo.RestClinicInfoService;
 import mz.org.fgh.idartlite.rest.service.Patient.RestPatientService;
 import mz.org.fgh.idartlite.searchparams.AbstractSearchParams;
 import mz.org.fgh.idartlite.searchparams.PatientSearchParams;
@@ -216,7 +217,7 @@ public class PatientVM extends SearchVM<Patient> {
         try {
             Patient existingPatient = patientService.checkExistsPatientWithNID(patient.getNid());
             if (existingPatient == null) {
-                patientService.saveFaltoso(patient);
+                patientService.savePatientAndDetails(patient);
                 Utilities.displayConfirmationDialog(getRelatedActivity(), "Paciente carregado com sucesso. Gostaria de ir aos detalhes do mesmo?", getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), PatientVM.this).show();
             } else {
                 existingPatient.setAttributes(attributeService.getAllOfPatient(existingPatient));
@@ -228,6 +229,24 @@ public class PatientVM extends SearchVM<Patient> {
                 }
 
             }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void downloadSelectedNormal(Patient patient) {
+        setPatient(patient);
+        try {
+            Patient existingPatient = patientService.checkExistsPatientWithNID(patient.getNid());
+
+            if (existingPatient == null) {
+                patientService.savePatientAndDetails(patient);
+                RestClinicInfoService.getRestLastClinicInfo(patient);
+                Utilities.displayConfirmationDialog(getRelatedActivity(), "Paciente carregado com sucesso. Gostaria de ir aos detalhes do mesmo?", getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), PatientVM.this).show();
+            } else {
+               Utilities.displayAlertDialog(getRelatedActivity(), "O paciente seleccionado ja foi carregado.").show();
+                 }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
