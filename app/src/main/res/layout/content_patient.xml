@@ -233,7 +233,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_5dp"
             android:layout_gravity="center"
-            android:visibility='@{viewModel.currentClinic.isPrivateOrComunitClinic ? (viewModel.onlineSearch &amp;&amp; (Utilities.stringHasValue(patient.dispensatioStatus) &amp;&amp; patient.dispensatioStatus != PatientAttribute.PATIENT_DISPENSATION_NORMAL)) ? View.VISIBLE : View.GONE}'
+            android:visibility='@{(viewModel.onlineSearch &amp;&amp; (Utilities.stringHasValue(patient.dispensatioStatus) &amp;&amp; patient.dispensatioStatus != PatientAttribute.PATIENT_DISPENSATION_NORMAL)) ? View.VISIBLE : View.GONE}'
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_arrow_circle_down" />
 
