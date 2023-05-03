@@ -122,7 +122,6 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
     public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application, Date startDate, Date endDate, long offset, long limit) throws SQLException {
         QueryBuilder<Dispense, Integer> qb = queryBuilder();
         QueryBuilder<DispensedDrug, Integer> dispensedDrugQb =  IdartLiteDataBaseHelper.getInstance(application.getApplicationContext()).getDispensedDrugDao().queryBuilder();
-        dispensedDrugQb.where().gt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED,0).and().lt(DispensedDrug.COLUMN_QUANTITY_SUPPLIED,12);
 
         qb.join(dispensedDrugQb);
         if (limit > 0 && offset > 0) qb.limit(limit).offset(offset);
@@ -130,29 +129,17 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
                 .and()
                 .le(Dispense.COLUMN_PICKUP_DATE, endDate).and().eq(Dispense.COLUMN_VOIDED,false);
 
-        System.out.println(qb.prepareStatementString());
         List<Dispense> resList = new ArrayList<>();
         for (Dispense dispense : qb.query()) {
-
-//            System.out.println("DISPENSE: "+dispense.getPrescription().getDiseaseType().getCode());
-//            System.out.println("length: "+dispense.getPrescription().getPrescriptionSeq().length());
-
             LocalDate ldPickUpDate = Instant.ofEpochMilli(dispense.getPickupDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate ldPirescriptionDate = Instant.ofEpochMilli(dispense.getPrescription().getPrescriptionDate().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-//            System.out.println("Days: "+ ldPickUpDate+"   _    "+ldPirescriptionDate);
-//            System.out.println("Days: "+ ChronoUnit.DAYS.between(ldPickUpDate, ldPirescriptionDate));
-
-            if(ChronoUnit.DAYS.between(ldPickUpDate, ldPirescriptionDate) < 3 && dispense.getPrescription().getPrescriptionSeq().length() > 4){// Dispensas da US
+            if(ChronoUnit.DAYS.between(ldPickUpDate, ldPirescriptionDate) < 7 && dispense.getPrescription().getPrescriptionSeq().length() > 4){// Dispensas da US
                 if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
                     resList.add(dispense);
             }
         }
         return resList;
     }
-
-
-
-
 
 //    public List<Dispense> getDispensesUsBetweenStartDateAndEndDateWithLimit(Application application, Date startDate, Date endDate, long offset, long limit) throws SQLException {
 //        QueryBuilder<Dispense, Integer> qb = queryBuilder();
