@@ -54,6 +54,7 @@ import mz.org.fgh.idartlite.util.Utilities;
 import mz.org.fgh.idartlite.view.dispense.CreateDispenseActivity;
 import mz.org.fgh.idartlite.view.patientPanel.DispenseFragment;
 import mz.org.fgh.idartlite.view.patientPanel.PatientPanelActivity;
+import mz.org.fgh.idartlite.viewmodel.prescription.PrescriptionVM;
 
 public class DispenseVM extends BaseViewModel {
 
@@ -82,6 +83,10 @@ public class DispenseVM extends BaseViewModel {
 
     private IPatientAttributeService attributeService;
 
+    protected IDiseaseTypeService diseaseTypeService;
+
+    private static String selectedOption;
+
     public DispenseVM(@NonNull Application application) {
         super(application);
 
@@ -95,6 +100,7 @@ public class DispenseVM extends BaseViewModel {
         this.episodeService = new EpisodeService(application, getCurrentUser());
         this.prescribedDrugService = new PrescribedDrugService(application, getCurrentUser());
         this.attributeService = new PatientAttributeService(application, getCurrentUser());
+        this.diseaseTypeService = new DiseaseTypeService(application, getCurrentUser());
         this.setViewListRemoveButton(true);
 
     }
@@ -378,7 +384,6 @@ public class DispenseVM extends BaseViewModel {
         return "";
     }
 
-
     @Override
     public void doOnConfirmed() {
         if (getCurrentStep().isApplicationStepEdit()) {
@@ -445,5 +450,14 @@ public class DispenseVM extends BaseViewModel {
 
     public String getPrescriptionTimeLeft(){
         return "Mes(es) Restantes de Validade: "+dispense.getPrescription().getTimeLeftInMonths();
+    }
+
+    public DiseaseType getDiseaseTypeByCode (String code) {
+        try {
+            return diseaseTypeService.getDiseaseTypeByCode(code.toUpperCase());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
     }
 }

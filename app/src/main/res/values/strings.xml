@@ -498,4 +498,5 @@ Se a reacção adversa for grave, referir o paciente para a US. </string>
     <string name="prophylaxy_follow_up">Seguimento de Profilaxia</string>
 
     <string name="disease_type_pop_up_title">Selectione o Tipo de Doença</string>
+    <string name="patient_doenst_have_prescription_disease_type">Não pode criar nova dispensa porque o paciente Não tem prescrições para o tipo de doença selecionado .</string>
 </resources>
