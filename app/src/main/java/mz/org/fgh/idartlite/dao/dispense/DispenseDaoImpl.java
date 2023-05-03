@@ -73,7 +73,7 @@ public class DispenseDaoImpl extends GenericDaoImpl<Dispense, Integer> implement
 
         List<Dispense> resList = new ArrayList<>();
         for (Dispense dispense : dispenses) {
-            if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
+            //if(dispense.getPrescription().getDiseaseType().getCode().equalsIgnoreCase("TARV"))
                 resList.add(dispense);
         }
         return resList;

@@ -380,7 +380,7 @@ public class Prescription extends BaseModel {
 	}
 
 	public String getUiId(){
-		return Utilities.concatStrings(this.patient.getNid(), this.prescriptionSeq, "-");
+		return Utilities.concatStrings(this.getPrescriptionDiseaseType().concat(this.patient.getNid()), this.prescriptionSeq, "-");
 	}
 
 	public boolean isSyncStatusReady(){
@@ -416,6 +416,10 @@ public class Prescription extends BaseModel {
 
 
 		return drugs;
+	}
+
+	public String getPrescriptionDiseaseType(){
+		return this.diseaseType != null ? this.diseaseType.getDescription()+": " : "TARV: ";
 	}
 
 	@Override
