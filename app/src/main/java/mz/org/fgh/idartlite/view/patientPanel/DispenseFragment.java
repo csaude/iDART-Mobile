@@ -29,6 +29,8 @@ import mz.org.fgh.idartlite.base.model.BaseModel;
 import mz.org.fgh.idartlite.base.viewModel.BaseViewModel;
 import mz.org.fgh.idartlite.common.ApplicationStep;
 import mz.org.fgh.idartlite.databinding.FragmentDispenseBinding;
+import mz.org.fgh.idartlite.listener.dialog.IDialogListener;
+import mz.org.fgh.idartlite.listener.dialog.IDiseaseTypeDialogListener;
 import mz.org.fgh.idartlite.listener.dialog.IListbleDialogListener;
 import mz.org.fgh.idartlite.listener.recyclerView.ClickListener;
 import mz.org.fgh.idartlite.model.ClinicSector;
@@ -39,8 +41,9 @@ import mz.org.fgh.idartlite.util.Utilities;
 import mz.org.fgh.idartlite.view.dispense.CreateDispenseActivity;
 import mz.org.fgh.idartlite.view.dispense.ReturnDispenseActivity;
 import mz.org.fgh.idartlite.viewmodel.dispense.DispenseVM;
+import mz.org.fgh.idartlite.viewmodel.prescription.PrescriptionVM;
 
-public class DispenseFragment extends GenericFragment implements IListbleDialogListener {
+public class DispenseFragment extends GenericFragment implements IListbleDialogListener, IDiseaseTypeDialogListener, IDialogListener {
 
     public static final String FRAGMENT_CODE_DISPENSE = "DispenseFragment";
     int dispensePosition;
@@ -50,8 +53,9 @@ public class DispenseFragment extends GenericFragment implements IListbleDialogL
     private FragmentDispenseBinding fragmentDispenseBinding;
     private DispenseAdapter dispenseAdapter;
     private List<Prescription> prescriptionList;
+    private static String selectedOption;
 
-
+    private Prescription lastPrescriptionByDiseaseType;
 
 
     public DispenseFragment() {
@@ -71,6 +75,10 @@ public class DispenseFragment extends GenericFragment implements IListbleDialogL
         this.rcvDispences = fragmentDispenseBinding.rcvDispenses;
 
         this.dispenseList = new ArrayList<>();
+        Map<Integer,String > map1 = new HashMap<>();
+        map1.put(1, "TARV");
+        map1.put(2, "TPT");
+        map1.put(3, "Prep");
 
         try {
             this.dispenseList = getRelatedViewModel().gatAllOfPatient(getSelectedPatient());
@@ -83,27 +91,19 @@ public class DispenseFragment extends GenericFragment implements IListbleDialogL
             displayDataOnRecyclerView(rcvDispences, dispenseAdapter, getContext());
         }
 
+
         fragmentDispenseBinding.newDispense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Patient patient = getMyActivity().getPatient();
-                List<Dispense> dispensesList=getDispenseList();
-                if (!getRelatedViewModel().patientHasEpisodioFim(patient)) {
-                    Intent intent = new Intent(getContext(), CreateDispenseActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("user", getCurrentUser());
-                    bundle.putSerializable("clinic", getMyActivity().getCurrentClinic());
-                    bundle.putSerializable("patient", patient);
-                    bundle.putSerializable("dispenses", (Serializable) dispensesList);
-                    bundle.putSerializable("step", ApplicationStep.STEP_CREATE);
-                    bundle.putSerializable("comingFromPrescription", false);
-                    bundle.putSerializable("clinicSector", getClinicSector());
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                } else
-                    Utilities.displayAlertDialog(DispenseFragment.this.getContext(), getActivity().getString(R.string.patient_has_final_episode_cant_create_dispense)).show();
-            }
+                if (getRelatedViewModel().getCurrentClinicSector() != null || getRelatedViewModel().getCurrentClinic().getPharmacyType().getDescription() == "Unidade Sanitária" )   {
+                    Utilities.displayShowDiseaseTypeDialog(DispenseFragment.this.getContext(),  map1.values().toArray(new String[map1.values().size()]), getActivity().getString(R.string.yes), getActivity().getString(R.string.no), DispenseFragment.this, DispenseFragment.this).show();
+                } else {
+                    selectedOption = "TARV";
+                   genericNewDispense();
+
+                }
+                }
         });
 
         rcvDispences.addOnItemTouchListener(
@@ -127,6 +127,8 @@ public class DispenseFragment extends GenericFragment implements IListbleDialogL
                 ));
 
     }
+
+
 
     private void displayPopupMenu(View view, int position) {
         getRelatedViewModel().setDispense(dispenseList.get(position));
@@ -326,6 +328,53 @@ public class DispenseFragment extends GenericFragment implements IListbleDialogL
 
     public void setDispenseList(List<Dispense> dispenseList) {
         this.dispenseList = dispenseList;
+    }
+
+    private void genericNewDispense() {
+        Patient patient = getMyActivity().getPatient();
+        List<Dispense> dispensesList = getDispenseList();
+        if (!getRelatedViewModel().patientHasEpisodioFim(patient)) {
+            Intent intent = new Intent(getContext(), CreateDispenseActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", getCurrentUser());
+            bundle.putSerializable("clinic", getMyActivity().getCurrentClinic());
+            bundle.putSerializable("patient", patient);
+            bundle.putSerializable("dispenses", (Serializable) dispensesList);
+            bundle.putSerializable("prescription", lastPrescriptionByDiseaseType);
+            bundle.putSerializable("step", ApplicationStep.STEP_CREATE);
+            bundle.putSerializable("comingFromPrescription", false);
+            bundle.putSerializable("clinicSector", getClinicSector());
+            intent.putExtras(bundle);
+            startActivity(intent);
+        } else {
+            Utilities.displayAlertDialog(DispenseFragment.this.getContext(), getActivity().getString(R.string.patient_has_final_episode_cant_create_dispense)).show();
+        }
+    }
+
+    @Override
+    public void doOnConfirmedDiseaseType(String[] diseaseTypes, int selectedDiseaseType)  {
+
+            selectedOption = diseaseTypes[selectedDiseaseType];
+        try {
+            lastPrescriptionByDiseaseType =  this.getRelatedViewModel().getLastPatientPrescriptionByDiseaseType( getMyActivity().getPatient(),getRelatedViewModel().getDiseaseTypeByCode(selectedOption));
+            if (lastPrescriptionByDiseaseType == null) {
+                Utilities.displayAlertDialog(DispenseFragment.this.getContext(), getActivity().getString(R.string.patient_doenst_have_prescription_disease_type)).show();
+            } else {
+                genericNewDispense();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    @Override
+    public void doOnConfirmed() {
+
+    }
+
+    @Override
+    public void doOnDeny() {
+
     }
 
    /* public void removeDispenseConfirmation() {

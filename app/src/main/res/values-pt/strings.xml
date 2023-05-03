@@ -459,4 +459,5 @@ Se a reacção adversa for grave, referir o paciente para a US. </string>
 
     <string name="carregar_paciente_faltoso">Carregar paciente\n Faltoso</string>
     <string name="carregar_paciente">Carregar paciente</string>
+    <string name="patient_doenst_have_prescription_disease_type">Não pode criar nova dispensa porque o paciente Não tem prescrições para o tipo de doença selecionado .</string>
 </resources>
