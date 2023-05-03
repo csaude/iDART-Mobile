@@ -164,7 +164,7 @@ public class PrescriptionService extends BaseService<Prescription> implements IP
         if (patient.get("prescriptionenddate") != null)
             prescription.setExpiryDate(getSqlDateFromString(requireNonNull(patient.get("prescriptionenddate")).toString(), "yyyy-MM-dd'T'HH:mm:ss"));
         prescription.setPatient(localPatient);
-        prescription.setPrescriptionSeq("0001");
+        prescription.setPrescriptionSeq(requireNonNull(patient.get("prescriptionid")).toString());
         prescription.setSupply(Math.round(Float.parseFloat(requireNonNull(patient.get("duration")).toString())));
         prescription.setSyncStatus(BaseModel.SYNC_SATUS_SENT);
         prescription.setTherapeuticLine(therapeuticLine);

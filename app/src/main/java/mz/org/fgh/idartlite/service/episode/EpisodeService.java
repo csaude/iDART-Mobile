@@ -88,6 +88,8 @@ public class EpisodeService extends BaseService<Episode> implements IEpisodeServ
                 episode.setUsUuid(Objects.requireNonNull(patient.get("mainclinicuuid")).toString());
                 episode.setSyncStatus(BaseModel.SYNC_SATUS_SENT);
                 udpateEpisode(episode);
+                localPatient.addEpisode(episode);
+
             }
         } else {
             buildEpisode(patient, localPatient, dataEpisodio);
