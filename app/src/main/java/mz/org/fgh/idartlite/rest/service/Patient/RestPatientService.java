@@ -297,17 +297,6 @@ public class RestPatientService extends BaseRestService {
                                         localPatient.setAttributes(new ArrayList<>());
                                         localPatient.getAttributes().add(PatientAttribute.fastCreateFaltoso(localPatient));
 
-                                       /* Episode episode = new Episode();
-                                        episode.setEpisodeDate(getSqlDateFromString(Objects.requireNonNull(patientRest.get("prescriptiondate")).toString(), "yyyy-MM-dd'T'HH:mm:ss"));
-                                        episode.setPatient(localPatient);
-                                        episode.setSanitaryUnit(Objects.requireNonNull(patientRest.get("mainclinicname")).toString());
-                                        episode.setUsUuid(Objects.requireNonNull(patientRest.get("mainclinicuuid")).toString());
-                                        episode.setStartReason(PatientAttribute.PATIENT_DISPENSATION_STATUS_FALTOSO);
-                                        episode.setNotes(PatientAttribute.PATIENT_DISPENSATION_STATUS_FALTOSO);
-                                        episode.setSyncStatus(BaseModel.SYNC_SATUS_SENT);
-                                        episode.setUuid(UUID.randomUUID().toString());
-                                        localPatient.setEpisodes(new ArrayList<>());
-                                        localPatient.getEpisodes().add(episode); */
                                     try {
                                         episodeService.saveEpisodeFromRest(patientRest, localPatient);
                                         prescriptionService.saveLastPrescriptionFromRest(patientRest, localPatient);
