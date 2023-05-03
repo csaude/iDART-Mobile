@@ -268,6 +268,9 @@ public class RestDispenseService extends BaseRestService {
                                                 saveDispensedOnRest(dispense, newDispense);
                                             }
                                             dispenseList.add(newDispense);
+                                            if ( Utilities.listHasElements(patient.getPrescriptionList())) {
+                                                patient.getPrescriptionList().get(0).getDispenses().add(newDispense);
+                                            }
                                         }
                                         if (listener != null)
                                             listener.doOnRestSucessResponse(BaseRestService.REQUEST_SUCESS);

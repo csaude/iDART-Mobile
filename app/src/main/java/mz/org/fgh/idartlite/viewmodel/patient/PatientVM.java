@@ -27,6 +27,7 @@ import mz.org.fgh.idartlite.model.Clinic;
 import mz.org.fgh.idartlite.model.patient.Patient;
 import mz.org.fgh.idartlite.rest.helper.RESTServiceHandler;
 import mz.org.fgh.idartlite.rest.service.ClinicInfo.RestClinicInfoService;
+import mz.org.fgh.idartlite.rest.service.Dispense.RestDispenseService;
 import mz.org.fgh.idartlite.rest.service.Patient.RestPatientService;
 import mz.org.fgh.idartlite.searchparams.AbstractSearchParams;
 import mz.org.fgh.idartlite.searchparams.PatientSearchParams;
@@ -243,6 +244,7 @@ public class PatientVM extends SearchVM<Patient> {
             if (existingPatient == null) {
                 patientService.savePatientAndDetails(patient);
                 RestClinicInfoService.getRestLastClinicInfo(patient);
+                RestDispenseService.restGetLastDispense(patient);
                 Utilities.displayConfirmationDialog(getRelatedActivity(), "Paciente carregado com sucesso. Gostaria de ir aos detalhes do mesmo?", getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), PatientVM.this).show();
             } else {
                Utilities.displayAlertDialog(getRelatedActivity(), "O paciente seleccionado ja foi carregado.").show();
