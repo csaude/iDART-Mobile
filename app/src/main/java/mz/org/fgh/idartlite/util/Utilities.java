@@ -217,11 +217,13 @@ public class Utilities {
     }
 
 
-    public static AlertDialog displayShowDiseaseTypeDialog(final Context mContext, String[] diseaseTypes, String positive, String negative, IDialogListener listener, IDiseaseTypeDialogListener listenerDisease)
+    public static AlertDialog displayShowDiseaseTypeDialog(final Context mContext, String[] diseaseTypes, String positive, String negative, IDialogListener listener, IDiseaseTypeDialogListener listenerDisease, boolean isDispense)
     {
+        int tittlePopUp = R.string.disease_type_pop_up_title1;
+        if(isDispense) tittlePopUp = R.string.disease_type_pop_up_title;
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(mContext)
                 // set message, title, and icon
-                .setTitle(mContext.getResources().getString(R.string.disease_type_pop_up_title))
+                .setTitle(mContext.getResources().getString(tittlePopUp))
                 .setSingleChoiceItems(diseaseTypes, selectedDiseaseTypeIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -229,7 +231,7 @@ public class Utilities {
                         // selectedFruits = fruits[which];
                     }
                 })
-                .setPositiveButton(positive, new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         selectedOption = diseaseTypes[selectedDiseaseTypeIndex];
@@ -238,7 +240,7 @@ public class Utilities {
                     }
 
                 })
-                .setNegativeButton(negative, new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         listener.doOnDeny();
                         dialog.dismiss();

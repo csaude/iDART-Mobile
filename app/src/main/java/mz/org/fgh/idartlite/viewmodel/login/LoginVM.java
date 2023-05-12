@@ -276,10 +276,10 @@ public class LoginVM extends BaseViewModel {
 
             // Fazer o bind de todas clinicSectorType aqui (Trata-se de uma US)
             List<ClinicSectorType> clinicSectorTypes = new ArrayList<>();
-
-
+            clinicSectorTypes.clear();
             try {
                 for (ClinicSectorType cst : getAllClinicSectorTypes()) {
+                    System.out.println("MABJ: "+cst);
                     clinicSectorTypes.add(cst);
                 }
             } catch (SQLException throwables) {
@@ -287,6 +287,7 @@ public class LoginVM extends BaseViewModel {
             }
 
             getClinicSectorTypeList().add(new ClinicSectorType());
+            getClinicSectorTypeList().clear();
             getClinicSectorTypeList().addAll(clinicSectorTypes);
             getRelatedActivity().loadClinicSectorTypeAdapter();
 
@@ -297,18 +298,18 @@ public class LoginVM extends BaseViewModel {
         notifyPropertyChanged(BR.selectedClinic);
         // notifyPropertyChanged(BR.selectedClinicSector);
         notifyPropertyChanged(BR.sanitaryUnit);
-        //JNM 12.01.2022
+
         notifyPropertyChanged(BR.selectedClinicSectorType);
 
     }
 
-    //JNM 12.01.2022
+
     @Bindable
     public Listble getSelectedClinicSectorType() {
         return selectedClinicSectorType;
     }
 
-    //JNM 12.01.2022
+
     public void setSelectedClinicSectorType(Listble selectedClinicSectorType) {
 
         this.selectedClinicSectorType = (ClinicSectorType) selectedClinicSectorType;
@@ -320,6 +321,8 @@ public class LoginVM extends BaseViewModel {
         List<ClinicSector> clinicSectorList = new ArrayList<>();
 
         Clinic currClinic = (Clinic) this.currentClinic;
+
+        clinicSectorList.clear();
 
         if (Utilities.listHasElements(currClinic.getClinicSectorList())) {
             int i = 0;

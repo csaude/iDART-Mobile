@@ -199,7 +199,7 @@ public class PrescriptionVM extends BaseViewModel implements IDiseaseTypeDialogL
         map1.put(3, "Prep");
 
         if (getCurrentClinicSector() != null) {
-            Utilities.displayShowDiseaseTypeDialog(getRelatedActivity(),  map1.values().toArray(new String[map1.values().size()]), getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), PrescriptionVM.this, PrescriptionVM.this).show();
+            Utilities.displayShowDiseaseTypeDialog(getRelatedActivity(),  map1.values().toArray(new String[map1.values().size()]), getRelatedActivity().getString(R.string.yes), getRelatedActivity().getString(R.string.no), PrescriptionVM.this, PrescriptionVM.this, false).show();
         } else {
             selectedOption = "TARV";
             requestForNewRecord();
