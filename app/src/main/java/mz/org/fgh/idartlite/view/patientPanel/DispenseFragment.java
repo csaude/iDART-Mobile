@@ -97,7 +97,7 @@ public class DispenseFragment extends GenericFragment implements IListbleDialogL
             public void onClick(View view) {
 
                 if (getRelatedViewModel().getCurrentClinicSector() != null || getRelatedViewModel().getCurrentClinic().getPharmacyType().getDescription() == "Unidade Sanitária" )   {
-                    Utilities.displayShowDiseaseTypeDialog(DispenseFragment.this.getContext(),  map1.values().toArray(new String[map1.values().size()]), getActivity().getString(R.string.yes), getActivity().getString(R.string.no), DispenseFragment.this, DispenseFragment.this).show();
+                    Utilities.displayShowDiseaseTypeDialog(DispenseFragment.this.getContext(),  map1.values().toArray(new String[map1.values().size()]), getActivity().getString(R.string.yes), getActivity().getString(R.string.no), DispenseFragment.this, DispenseFragment.this, true).show();
                 } else {
                     selectedOption = "TARV";
                    genericNewDispense();
