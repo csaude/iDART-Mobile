@@ -3,7 +3,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/tools">
-
 <data>
     <variable
         name="viewModel"
@@ -17,7 +16,8 @@
 </data>
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,26 +25,27 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen_0dp"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_height="3dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_0dp"
-                    android:layout_weight="0.7"/>
+                    android:layout_height="2dp"
+                    android:layout_weight="0.7" />
 
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
                     android:layout_gravity="bottom|center"
                     android:layout_marginBottom="@dimen/dimen_18dp"
+                    android:layout_weight="1"
                     android:contentDescription="@string/logImage"
                     app:srcCompat="@drawable/ic_baseline_account_circle_24" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_0dp"
@@ -52,14 +53,22 @@
                 android:paddingLeft="@dimen/dimen_18dp"
                 android:paddingRight="@dimen/dimen_18dp"
                 android:layout_weight="2.5">
+
                 <TextView
                     android:id="@+id/textFarmacia"
+                    style="@style/login_notice_text_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/login_text_style"
-                    android:visibility="@{viewModel.appHasUsersOnDB() ? View.VISIBLE : View.GONE}"
-                    android:text="Farmácia"/>
+                    android:text="Ao acessar este sistema, você está prestes a visualizar informações altamente confidenciais de utentes. É sua responsabilidade protegê-las adequadamente e usá-las somente para os fins autorizados. A privacidade dos utentes é essencial para nossa missão."
+                />
 
+                <TextView
+                    android:id="@+id/textFarmacia3"
+                    style="@style/login_text_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Farmácia"
+                    android:visibility="@{viewModel.appHasUsersOnDB() ? View.VISIBLE : View.GONE}" />
 
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:prompt="@string/farmacia"
@@ -78,7 +87,6 @@
                     android:visibility="@{viewModel.sanitaryUnit  ? View.VISIBLE : View.GONE}"
                     android:text="@string/clinic_sector_type"/>
 
-
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/clinic_sector_Type"
                     android:prompt="@string/clinic_sector_type"
@@ -96,7 +104,6 @@
                     android:visibility="@{viewModel.sanitaryUnit  ? View.VISIBLE : View.GONE}"
                     android:text="@string/clinic_sector"/>
 
-
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/clinic_sector_1"
                     android:prompt="@string/clinic_sector"
@@ -105,7 +112,6 @@
                     android:visibility="@{viewModel.sanitaryUnit ? View.VISIBLE : View.GONE}"
                     app:adapter="@{clinicSectorAdapter}"
                     bind:selectedOpt="@={viewModel.selectedClinicSector}" />
-
 
                 <TextView
                     android:layout_width="match_parent"
@@ -189,16 +195,8 @@
                             android:textSize="16sp" />
                     </LinearLayout>
                 </RelativeLayout>
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/login_text_style"
-                    android:textSize="12dp"
-                    android:gravity="center"
-                    android:text="Forgot your password?"/>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_0dp"
