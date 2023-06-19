@@ -87,7 +87,7 @@ public class ClinicInfoDaoImpl extends GenericDaoImpl<ClinicInformation, Integer
 
 
         clinicInformationQb1.where().raw(" `clinic_information`.`patient_id` = `patient`.`id`  group by `clinic_information`.`patient_id`");
-
+        patientQb.where().eq(Patient.COLUMN_GENDER,'F');
 
         if (Utilities.stringHasValue(reportType) && (reportType.equals(ClinicInformation.PREGNANT_STATUS_POSITIVE))){
             clinicInformationQb.join(patientQb).orderBy(ClinicInformation.COLUMN_REGISTER_DATE,true);
