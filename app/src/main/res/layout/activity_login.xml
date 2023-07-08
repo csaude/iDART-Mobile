@@ -55,14 +55,6 @@
                 android:layout_weight="2.5">
 
                 <TextView
-                    android:id="@+id/textFarmacia"
-                    style="@style/login_notice_text_style"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ao acessar este sistema, você está prestes a visualizar informações altamente confidenciais de utentes. É sua responsabilidade protegê-las adequadamente e usá-las somente para os fins autorizados. A privacidade dos utentes é essencial para nossa missão."
-                />
-
-                <TextView
                     android:id="@+id/textFarmacia3"
                     style="@style/login_text_style"
                     android:layout_width="match_parent"

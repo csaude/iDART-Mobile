@@ -108,10 +108,11 @@ public class RestDispenseService extends BaseRestService {
         clinicService = new ClinicService(getApp(), null);
         clinicSectorService = new ClinicSectorService(getApp(), null);
         Clinic clinic = clinicService.getAllClinics().get(0);
+         String diseaseType = "TARV";
 
         ArrayList<ClinicSector> clinicSectorList = (ArrayList<ClinicSector>) clinicSectorService.getClinicSectorsByClinic(clinic);
         if (clinicSectorList.isEmpty()) {
-             url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + clinic.getUuid() + "&offset=" + offset + "&limit=" + limit;
+             url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + clinic.getUuid() + "&tipodoenca=eq." + diseaseType + "&offset=" + offset + "&limit=" + limit;
         } else {
              url = BaseRestService.baseUrl + "/patient_last_sync_tmp_dispense_vw?clinicuuid=eq." + clinicSectorList.get(0).getUuid() + "&offset=" + offset + "&limit=" + limit;
         }
@@ -125,12 +126,12 @@ public class RestDispenseService extends BaseRestService {
                 try {
                     handler.addHeader("Content-Type", "application/json");
                     handler.objectRequest(url, Request.Method.GET, null, Object[].class, (Response.Listener<Object[]>) dispenses -> {
-                        try {
+
                             if (dispenses.length > 0) {
                                 List<Dispense> dispenseList = new ArrayList<>();
                                 for (Object dispense : dispenses) {
                                     Log.d(TAG, "onResponse: Dispensa " + dispense);
-
+                                    try {
                                     LinkedTreeMap<String, Object> itemresult = (LinkedTreeMap<String, Object>) (Object) dispense;
 
                                     Patient patient = patientService.getPatientByUuid(itemresult.get("uuidopenmrs").toString());
@@ -178,16 +179,19 @@ public class RestDispenseService extends BaseRestService {
                                         }
                                     }
                                 }
+                                    catch (Exception e) {
+                                          log.saveErrorLogs(TAG, "Ocorreu um erro Inesperado: " + e);
+                                        e.getStackTrace();
+                                        Log.d(TAG, "onErrorResponse 1: Erro no GET :" + e.getMessage());;
+                                    }
                                 if (listener != null)
                                     listener.doOnResponse(BaseRestService.REQUEST_SUCESS, dispenseList);
-                            } else {
+                               // listener.doOnFInis
+                            }
+                        } else {
                                 listener.doOnResponse(REQUEST_NO_DATA, null);
                                 Log.w(TAG, "Response Sem Info." + dispenses.length);
                             }
-                        } catch (Exception e) {
-                            log.saveErrorLogs(TAG, "Ocorreu um erro Inesperado: " + e);
-                            Log.d(TAG, "onErrorResponse 1: Erro no GET :" + e.getMessage());
-                        }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
@@ -196,13 +200,13 @@ public class RestDispenseService extends BaseRestService {
                         }
                     });
                 } catch (Exception e) {
-                    log.saveErrorLogs(TAG, "Ocorreu um erro Inesperado: " + e);
+                 //   log.saveErrorLogs(TAG, "Ocorreu um erro Inesperado: " + e);
                     Log.d(TAG, "onErrorResponse 2: Erro no GET :" + e.getMessage());
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
-            log.saveErrorLogs(TAG, "Ocorreu um erro Inesperado: " + e);
+         //   log.saveErrorLogs(TAG, "Ocorreu um erro Inesperado: " + e);
             Log.d(TAG, "onErrorResponse 3: Erro no GET :" + e.getMessage());
         }
     }
