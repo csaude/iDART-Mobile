@@ -15,6 +15,7 @@ import mz.org.fgh.idartlite.adapter.spinner.listable.ListableSpinnerAdapter;
 import mz.org.fgh.idartlite.base.activity.BaseActivity;
 import mz.org.fgh.idartlite.base.viewModel.BaseViewModel;
 import mz.org.fgh.idartlite.databinding.ActivityLoginBinding;
+import mz.org.fgh.idartlite.listener.dialog.IDialogListener;
 import mz.org.fgh.idartlite.listener.rest.RestResponseListener;
 import mz.org.fgh.idartlite.model.Clinic;
 import mz.org.fgh.idartlite.model.ClinicSectorType;
@@ -65,8 +66,11 @@ public class LoginActivity extends BaseActivity implements RestResponseListener<
         }
 
         getSharedPreferencesData();
-
+        Utilities.checkPermissionsToViewPdf(this);
         populateSctorTypes();
+        Utilities.displayImportantMessage(this,"Ao acessar este sistema," +
+                " você está prestes a visualizar informações altamente confidenciais de utentes." +
+                " É sua responsabilidade protegê-las adequadamente e usá-las somente para os fins autorizados. A privacidade dos utentes é essencial para nossa missão.","Importante").show();
     }
 
     public void loadClinicAdapters() {

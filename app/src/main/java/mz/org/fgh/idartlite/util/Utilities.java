@@ -11,11 +11,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -259,6 +261,23 @@ public class Utilities {
         return displayConfirmationDialog(mContext, dialogMesg, mContext.getString(R.string.remove), mContext.getString(R.string.cancel), 0, baseModel, listener);
     }
 
+    public static AlertDialog displayImportantMessage(final Context mContext, final String alertMessage,final String titleMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext,
+                R.style.CustomAlertDialogStyle)
+                .setMessage(alertMessage)
+                .setTitle(titleMessage)
+                .setIcon(R.drawable.info_icon)
+
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+
+                });
+
+        return builder.create();
+    }
     public static <T> List<T> parseToList(T... obj){
         if (obj == null || obj.length == 0) return null;
 

@@ -147,13 +147,16 @@
         <item name="android:textSize">@dimen/dimen_12dp</item>
         <item name="android:layout_marginBottom">@dimen/dimen_5dp</item>
     </style>
-    <style name="login_notice_text_style">
+    <style name="CustomAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/red</item>
+    </style>
+
+    <style name="login_notice_text_style" android.R.id= "login_text">
         <item name="android:textColor">@color/red</item>
         <item name="android:textStyle">bold</item>
         <item name="android:typeface">sans</item>
         <item name="android:textSize">@dimen/dimen_15dp</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:layout_marginBottom">@dimen/dimen_5dp</item>
     </style>
     <style name="bottom_border_edit_text_style">
         <item name="android:textColor">@color/black</item>
