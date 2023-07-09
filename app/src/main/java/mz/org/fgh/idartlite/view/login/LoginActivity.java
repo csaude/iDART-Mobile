@@ -70,7 +70,7 @@ public class LoginActivity extends BaseActivity implements RestResponseListener<
         populateSctorTypes();
         Utilities.displayImportantMessage(this,"Ao acessar este sistema," +
                 " você está prestes a visualizar informações altamente confidenciais de utentes." +
-                " É sua responsabilidade protegê-las adequadamente e usá-las somente para os fins autorizados. A privacidade dos utentes é essencial para nossa missão.","Importante").show();
+                " É sua responsabilidade protegê-las adequadamente e usá-las somente para os fins autorizados. A privacidade dos utentes é essencial para nossa missão.","Aviso de Confidencialidade").show();
     }
 
     public void loadClinicAdapters() {
