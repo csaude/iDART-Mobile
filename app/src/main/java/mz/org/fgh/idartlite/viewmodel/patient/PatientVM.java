@@ -108,7 +108,6 @@ public class PatientVM extends SearchVM<Patient> {
 
                                     } else {
                                         doSearch();
-                                        //  Log.i(TAG, "NAO ESTA em CARREGAMENTOO...");
                                     }
                                 }
                             } catch (Exception e) {
@@ -117,7 +116,9 @@ public class PatientVM extends SearchVM<Patient> {
                                 continue;
                             }
                         }
-                    } else
+                    } else{
+                        doSearch();
+                    }
                         Log.w(TAG, "Response Sem Info." + loadingStatusList.length);
                 }
             }, new Response.ErrorListener() {
