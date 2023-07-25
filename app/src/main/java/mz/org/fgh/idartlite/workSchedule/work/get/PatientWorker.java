@@ -28,7 +28,7 @@ public class PatientWorker extends BaseWorker<Patient> {
     @Override
     protected void doOnStart() {
         try {
-            issueNotification(CHANNEL_1_ID, "Sincronização de Pacientes Iniciada", true);
+            issueNotification(CHANNEL_1_ID, "Sincronização de Pacientes e Informação Farmacêutica Iniciada", true);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -43,9 +43,9 @@ public class PatientWorker extends BaseWorker<Patient> {
     @Override
     protected void doOnFinish() {
         try {
-            String msg = "Sincronização de Pacientes Terminada, Não Foram Encontrados Novos Pacientes";
+            String msg = "Sincronização de Pacientes e Informação Farmacêutica Terminada, Não Foram Encontrados Novos registos";
             if (hasNewRescs()) {
-                msg = "Sincronização de Pacientes Terminada. \n";
+                msg = "Sincronização de Pacientes e Informação farmacêutica Terminada. \n";
 
                 if (getNewRecsQty() > 0) {
                     msg += "Tem " + getNewRecsQty() ;

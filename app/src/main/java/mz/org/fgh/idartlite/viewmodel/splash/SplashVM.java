@@ -136,6 +136,7 @@ public class SplashVM extends BaseViewModel implements RestResponseListener<Clin
         workerScheduleExecutor.initPostNewPatientDataTaskWork();
         workerScheduleExecutor.initStockAlertTaskWork();
         workerScheduleExecutor.initPatientUSDispenseTaskWork();
+        workerScheduleExecutor.initClinicInformationTaskWork();
         }
 
     public void requestConfiguration() {

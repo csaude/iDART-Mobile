@@ -148,7 +148,7 @@ public class DataSyncWorker extends Worker {
                 List<ClinicInformation> clinicInformationList = clinicInfoService.getAllClinicInfoByStatus(BaseModel.SYNC_SATUS_READY);
                 if (clinicInformationList != null && clinicInformationList.size() > 0) {
                     for (ClinicInformation clinicInformation : clinicInformationList) {
-                        RestClinicInfoService.restPostClinicInfo(clinicInformation);
+                        RestClinicInfoService.restPostClinicInfo(null,clinicInformation);
                     }
                 }
             } catch (SQLException e) {
