@@ -203,7 +203,7 @@ public class RestRunDataForTestService extends BaseRestService implements RestRe
             List<ClinicInformation> clinicInformationList = clinicInfoService.getAllClinicInfoByStatus(BaseModel.SYNC_SATUS_READY);
             if (clinicInformationList != null && clinicInformationList.size() > 0) {
                 for (ClinicInformation clinicInformation : clinicInformationList) {
-                    RestClinicInfoService.restPostClinicInfo(clinicInformation);
+                    RestClinicInfoService.restPostClinicInfo(null,clinicInformation);
                     //    RestPatientService.restPostPatientSector(clinicInformation.getPatient());
                 }
             }

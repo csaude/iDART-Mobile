@@ -56,12 +56,13 @@ public class RestClinicInfoService extends BaseRestService {
     private static List<ClinicInformation> clinicInformationsList;
     private static List<Episode> episodeList;
 
+
     public RestClinicInfoService(Application application, User currentUser) {
         super(application, currentUser);
         clinicService = new ClinicService(application, currentUser);
     }
 
-    public static void restPostClinicInfo(ClinicInformation clinicInformation) {
+    public static void restPostClinicInfo(RestResponseListener listener,ClinicInformation clinicInformation) {
 
         String url = BaseRestService.baseUrl + "/sync_temp_clinic_information";
 
@@ -90,6 +91,7 @@ public class RestClinicInfoService extends BaseRestService {
                     try {
                         clinicInformation.setSyncStatus(BaseModel.SYNC_SATUS_SENT);
                         clinicInfoService.updateClinicInfo(clinicInformation);
+                        listener.doOnResponse(BaseRestService.REQUEST_SUCESS, null);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -97,7 +99,7 @@ public class RestClinicInfoService extends BaseRestService {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    listener.doOnResponse(REQUEST_ERROR, null);
                     Log.d(TAG, "onErrorResponse: Erro no POST :" + generateErrorMsg(error));
                 }
             });
@@ -176,6 +178,23 @@ public class RestClinicInfoService extends BaseRestService {
         }
         }
     }
+
+    public static void restPostAllClinicInfo(RestResponseListener listener) throws SQLException {
+        ClinicInfoService clinicInfoService = new ClinicInfoService(getApp(), null);
+        List<ClinicInformation> clinicInformationList= null;
+            clinicInformationList = clinicInfoService.getAllClinicInfoByStatus(BaseModel.SYNC_SATUS_READY);
+
+        if(clinicInformationList != null && clinicInformationList.size() > 0) {
+            for (ClinicInformation clinicInformation : clinicInformationList) {
+                RestClinicInfoService.restPostClinicInfo(listener, clinicInformation);
+            }
+            listener.doOnResponse(BaseRestService.REQUEST_SUCESS, clinicInformationList);
+        } else {
+            listener.doOnResponse(BaseRestService.REQUEST_NO_DATA, null);
+        }
+
+    }
+
 
     private static SyncClinicInformation setSyncClinicInfo(ClinicInformation clinicInformation) {
 

@@ -29,6 +29,7 @@ import mz.org.fgh.idartlite.workSchedule.work.get.RestGetPatientDispensationWork
 import mz.org.fgh.idartlite.workSchedule.work.get.StockWorker;
 import mz.org.fgh.idartlite.workSchedule.work.patch.RestPacthPatientWorker;
 import mz.org.fgh.idartlite.workSchedule.work.patch.RestPatchStockConfigWorkerScheduler;
+import mz.org.fgh.idartlite.workSchedule.work.post.RestPostClinicInformationWorkerScheduler;
 import mz.org.fgh.idartlite.workSchedule.work.post.RestPostNewPatientWorkerScheduler;
 import mz.org.fgh.idartlite.workSchedule.work.post.RestPostPatientDataWorkerScheduler;
 import mz.org.fgh.idartlite.workSchedule.work.post.RestPostStockWorkerScheduler;
@@ -141,6 +142,23 @@ public class WorkerScheduleExecutor {
 
         workManager.enqueue(periodicConfigDataWorkRequest);
     }
+
+    public void initClinicInformationTaskWork() {
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(true)
+                .build();
+
+        PeriodicWorkRequest periodicConfigDataWorkRequest = new PeriodicWorkRequest.Builder(RestPostClinicInformationWorkerScheduler.class, getDataSyncInterval(), TimeUnit.HOURS)
+                .setConstraints(constraints)
+                .setInitialDelay(3,TimeUnit.HOURS)
+                .addTag("INIT_CLINIC_INFORMATION_ID " + JOB_ID)
+                .build();
+
+        workManager.enqueue(periodicConfigDataWorkRequest);
+    }
+
 
     public void initPatientDispenseTaskWork() {
 
@@ -313,6 +331,13 @@ public class WorkerScheduleExecutor {
         }
     }
 
+    public void runOneTimeClinicInformationSync() {
+        OneTimeWorkRequest dispenseOneTimeWorkRequest = new OneTimeWorkRequest.Builder(RestPostClinicInformationWorkerScheduler.class).addTag("ONE_TIME_DATA_CLINIC_INFO_ID" + ONE_TIME_REQUEST_JOB_ID).build();
+       if (!Utilities.isWorkScheduled("ONE_TIME_DATA_CLINIC_INFO_ID" + ONE_TIME_REQUEST_JOB_ID, workManager) && !Utilities.isWorkRunning("INIT_CLINIC_INFORMATION_ID " + JOB_ID, workManager)) {
+            workManager.enqueue(dispenseOneTimeWorkRequest);
+        }
+    }
+
     public void runOneStockAlert() {
         OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(StockAlertWorker.class).addTag("ONE_TIME_STOCK_ALERT_ID" + ONE_TIME_REQUEST_JOB_ID).build();
         if (!Utilities.isWorkScheduled("ONE_TIME_STOCK_ALERT_ID" + ONE_TIME_REQUEST_JOB_ID, workManager) && !Utilities.isWorkRunning("NEW_STOCK_ALERT_ID " + JOB_ID, workManager)) {
@@ -374,12 +399,17 @@ public class WorkerScheduleExecutor {
     }
 
     public void runDataSyncNow(boolean fullLoad) {
+        this.runOneTimeClinicInformationSync();
+        /*
         if (Utilities.isWorkScheduled("ONE_TIME_PATIENT_ID" + ONE_TIME_REQUEST_JOB_ID, workManager) ||
             Utilities.isWorkRunning("PATIENT_ID " + JOB_ID, workManager) ||
             Utilities.isWorkRunning("INIT_PATIENT_DISPENSE_ID " + JOB_ID, workManager) ||
             Utilities.isWorkScheduled("ONE_TIME_DISPENSE_ID" + ONE_TIME_REQUEST_JOB_ID, workManager) ||
             Utilities.isWorkScheduled("ONE_TIME_STOCK_ID" + ONE_TIME_REQUEST_JOB_ID, workManager) ||
-            Utilities.isWorkRunning("INIT_STOCK_ID " + JOB_ID, workManager)) {
+            Utilities.isWorkRunning("INIT_STOCK_ID " + JOB_ID, workManager)  ||
+            Utilities.isWorkRunning("INIT_CLINIC_INFORMATION_ID " + JOB_ID, workManager)  ||
+            Utilities.isWorkRunning("ONE_TIME_DATA_CLINIC_INFO_ID " + ONE_TIME_REQUEST_JOB_ID, workManager)
+        ) {
             Toast.makeText(context, "Existe neste momento uma sincronização similar em curso, por favor aguarde o seu termino para iniciar nova.", Toast.LENGTH_LONG).show();
             //Utilities.displayAlertDialog(this.context, "Existe neste momento uma sincronização similar em curso, por favor aguarde o seu termino para iniciar nova.").show();
         } else {
@@ -390,6 +420,7 @@ public class WorkerScheduleExecutor {
             this.runOneTimeDispenseSync();
             this.runOneTimeUSDispensesSync();
             this.runOneCheckLoadingSync();
-        }
+            this.runOneTimeClinicInformationSync();
+        }*/
     }
 }
