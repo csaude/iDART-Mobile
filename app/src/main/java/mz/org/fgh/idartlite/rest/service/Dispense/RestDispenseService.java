@@ -184,10 +184,11 @@ public class RestDispenseService extends BaseRestService {
                                         e.getStackTrace();
                                         Log.d(TAG, "onErrorResponse 1: Erro no GET :" + e.getMessage());;
                                     }
-                                if (listener != null)
-                                    listener.doOnResponse(BaseRestService.REQUEST_SUCESS, dispenseList);
+
                                // listener.doOnFInis
                             }
+                                if (listener != null)
+                                    listener.doOnResponse(BaseRestService.REQUEST_SUCESS, dispenseList);
                         } else {
                                 listener.doOnResponse(REQUEST_NO_DATA, null);
                                 Log.w(TAG, "Response Sem Info." + dispenses.length);
