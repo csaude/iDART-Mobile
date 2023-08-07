@@ -399,8 +399,6 @@ public class WorkerScheduleExecutor {
     }
 
     public void runDataSyncNow(boolean fullLoad) {
-        this.runOneTimeClinicInformationSync();
-        /*
         if (Utilities.isWorkScheduled("ONE_TIME_PATIENT_ID" + ONE_TIME_REQUEST_JOB_ID, workManager) ||
             Utilities.isWorkRunning("PATIENT_ID " + JOB_ID, workManager) ||
             Utilities.isWorkRunning("INIT_PATIENT_DISPENSE_ID " + JOB_ID, workManager) ||
@@ -421,6 +419,6 @@ public class WorkerScheduleExecutor {
             this.runOneTimeUSDispensesSync();
             this.runOneCheckLoadingSync();
             this.runOneTimeClinicInformationSync();
-        }*/
+        }
     }
 }
