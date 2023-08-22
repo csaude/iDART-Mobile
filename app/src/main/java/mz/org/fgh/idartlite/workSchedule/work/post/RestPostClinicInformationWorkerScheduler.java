@@ -24,7 +24,7 @@ public class RestPostClinicInformationWorkerScheduler extends BaseWorker<ClinicI
     @Override
     protected void doOnStart() {
         try {
-            issueNotification(CHANNEL_2_ID, "Sincronização de Informação farmaceuica Iniciada", true);
+            issueNotification(CHANNEL_2_ID, "Sincronização de Informação farmacêutica Iniciada", true);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -33,7 +33,7 @@ public class RestPostClinicInformationWorkerScheduler extends BaseWorker<ClinicI
     @Override
     protected void doOnFinish() {
         try {
-            issueNotification(CHANNEL_2_ID, "Sincronização de Informação farmaceuica  Terminada", false);
+            issueNotification(CHANNEL_2_ID, "Sincronização de Informação farmacêutica  Terminada", false);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
